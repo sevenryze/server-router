@@ -1,0 +1,9 @@
+# Build temp files
+.idea
+.vscode
+
+# node_modules
+node_modules
+
+# Dist files
+dist 
