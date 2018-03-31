@@ -1,20 +1,20 @@
 # Table of Content
 
-- [Table of Content](#table-of-content)
-- [Tool Story](#tool-story)
-- [Big Picture, as I said](#big-picture-as-i-said)
-- [How to use](#how-to-use)
-- [API](#api)
-    - [`Router()`](#router)
-    - [`dde_mount(path, router)`](#ddemountpath-router)
-    - [`dde_METHOD(task)`](#ddemethodtask)
-    - [`dde_listen(port)`](#ddelistenport)
-    - [`dde_close()`](#ddeclose)
-- [Build and Test](#build-and-test)
-    - [Build](#build)
-    - [Test](#test)
-- [Code of Conduct](#code-of-conduct)
-- [Contributor](#contributor)
+* [Table of Content](#table-of-content)
+* [Tool Story](#tool-story)
+* [Big Picture, as I said](#big-picture-as-i-said)
+* [How to use](#how-to-use)
+* [API](#api)
+  * [`Router()`](#router)
+  * [`dde_mount(path, router)`](#ddemountpath-router)
+  * [`dde_METHOD(task)`](#ddemethodtask)
+  * [`dde_listen(port)`](#ddelistenport)
+  * [`dde_close()`](#ddeclose)
+* [Build and Test](#build-and-test)
+  * [Build](#build)
+  * [Test](#test)
+* [Code of Conduct](#code-of-conduct)
+* [Contributor](#contributor)
 
 # Tool Story
 
@@ -71,6 +71,8 @@ Use `npm` to install `@sevenryze/server`, then import the only exported class.
 
 ```
 import { Router } from "@sevenryze/server"
+// Or commonjs
+const { Router } = require("@sevenryze/server");
 
 let router = new Router();
 ```
