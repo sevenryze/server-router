@@ -1,20 +1,35 @@
 # Table of Content
 
-* [Table of Content](#table-of-content)
-* [Tool Story](#tool-story)
-* [Big Picture, as I said](#big-picture-as-i-said)
-* [How to use](#how-to-use)
-* [API](#api)
-  * [`Router()`](#router)
-  * [`dde_mount(path, router)`](#ddemountpath-router)
-  * [`dde_METHOD(task)`](#ddemethodtask)
-  * [`dde_listen(port)`](#ddelistenport)
-  * [`dde_close()`](#ddeclose)
-* [Build and Test](#build-and-test)
-  * [Build](#build)
-  * [Test](#test)
-* [Code of Conduct](#code-of-conduct)
-* [Contributor](#contributor)
+- [Table of Content](#table-of-content)
+- [Tool Story](#tool-story)
+- [Big Picture, as I said](#big-picture-as-i-said)
+- [How to use](#how-to-use)
+- [API](#api)
+  - [`Router()`](#router)
+  - [`dde_mount(path, router)`](#ddemountpath-router)
+  - [`dde_METHOD(task)`](#ddemethodtask)
+  - [Helpers on `Request`](#helpers-on-request)
+    - [`request.dde_originalUrl`: string](#requestddeoriginalurl-string)
+    - [`request.dde_parsedUrl`: Url](#requestddeparsedurl-url)
+    - [`request.dde_queryString`: object](#requestddequerystring-object)
+    - [`request.dde_response`: Respond](#requestdderesponse-respond)
+    - [`request.dde_method`: string](#requestddemethod-string)
+    - [`request.dde_headers`: object](#requestddeheaders-object)
+    - [`request.dde_taskList`: Task[]](#requestddetasklist-task)
+    - [`request.tmp\_\*`: any](#requesttmp-any)
+    - [`request.dde_getIp()`: () => string](#requestddegetip-string)
+  - [Helpers on `Response`](#helpers-on-response)
+    - [`response.dde_request`: Request](#responsedderequest-request)
+    - [`response.dde_setHeader(object)`: (object) => Respond](#responseddesetheaderobject-object-respond)
+    - [`response.dde_setStatus(code)`: (code: number) => Response](#responseddesetstatuscode-code-number-response)
+    - [`response.dde_send(body)`: (body?) => Response](#responseddesendbody-body-response)
+  - [`dde_listen(port)`](#ddelistenport)
+  - [`dde_close()`](#ddeclose)
+- [Build and Test](#build-and-test)
+  - [Build](#build)
+  - [Test](#test)
+- [Code of Conduct](#code-of-conduct)
+- [Contributor](#contributor)
 
 # Tool Story
 
@@ -120,7 +135,7 @@ Want to know why? see my blog, if there are... 🤡
 
 ```
 // sync task
-router.dde_get((request, response, next)=>{
+router.dde_get( (request, response, next) => {
     // Do something.
 
     response.dde_send();
@@ -128,11 +143,104 @@ router.dde_get((request, response, next)=>{
 });
 
 // async task
-router.dde_get(async (request, response, next)=>{
+router.dde_get(async (request, response, next) => {
     // Do something.
 
     return next();
 })
+```
+
+## Helpers on `Request`
+
+### `request.dde_originalUrl`: string
+
+Original, unprocessed request url.
+
+### `request.dde_parsedUrl`: Url
+
+The parsed http url, see https://nodejs.org/dist/latest-v9.x/docs/api/url.html#url_url_strings_and_url_objects for more info.
+
+### `request.dde_queryString`: object
+
+The query string key-value pairs parsed into object format.
+
+### `request.dde_response`: Respond
+
+Point to the accompanied Response object.
+
+### `request.dde_method`: string
+
+The request http method.
+
+### `request.dde_headers`: object
+
+The http headers parsed into object format.
+
+### `request.dde_taskList`: Task[]
+
+The tasks waiting for this request.
+
+### `request.tmp\_\*`: any
+
+The app context variable for simply share state between tasks. Must be the tmp\*\* format.
+
+### `request.dde_getIp()`: () => string
+
+Get the client ip and be able to handle behind proxy case.
+
+```js
+request.dde_getIp();
+// => "127.0.0.1"
+```
+
+## Helpers on `Response`
+
+### `response.dde_request`: Request
+
+Points to the accompanied request object.
+
+### `response.dde_setHeader(object)`: (object) => Respond
+
+* object <string> - Object used to set the headers, such as { Accept: "text/plain", "X-API-Key": "dde" }.
+
+Set header `key` to its `value`. If the `Content-Type` field is going to be set, this method will automatically turn the value to extensional form, eg."html" to the standard mime forms "text/html", and add the charset if it can be matched in mime-db package.
+
+Return the this object, aka. Respond to make chain-able calls available.
+
+```js
+response.dde_setHeader({ Accept: "text/plain", "X-API-Key": "xmt" });
+// => Accept: "text/plain"
+// => X-API-Key: "xmt"
+response.dde_setHeader({ "Content-Type": "json" });
+// => Content-Type: "application/json; charset=utf-8"
+response.dde_setHeader({ "Content-Type": "html" });
+// => Content-Type: "text/html; charset=utf-8"
+response.dde_setHeader({ "Content-Type": "bin" });
+// => Content-Type: "application/octet-stream"
+```
+
+### `response.dde_setStatus(code)`: (code: number) => Response
+
+* code <number> - Http status code number such as "404"
+
+Set the status `code` of the response.
+
+Return this object for chain-able calls.
+
+```JavaScript
+response.dde_setStatus(404);
+```
+
+### `response.dde_send(body)`: (body?) => Response
+
+* body <string | object | buffer> - Can be a string such as `"some string"`, an object such as `{some: "haha"}` and a buffer such as `new Buffer("some buffer")`.
+
+Send response to the remote client, and this method will terminate the underlying socket session.
+
+```JavaScript
+response.dde_send(new Buffer("some buffer"));
+response.dde_send({ some: "json" });
+response.dde_send("<p>some html</p>");
 ```
 
 ## `dde_listen(port)`

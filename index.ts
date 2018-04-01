@@ -5,4 +5,4 @@
 // Import own libraries
 
 /**********************************************************************************************************************/
-export { Router } from "./lib/router";
+export { Router } from "./src/router";

@@ -126,9 +126,9 @@ export let responseProto: ResponseProto = {
 export interface ResponseProto {
   /**
    * Set header field `key` to its `value`. If the `Content-Type` header
-   * field be set, this method will automatically turns extensive forms
-   * like "html" to the standard mime forms like "text/html" and
-   * adds the charset if can be matched in mime-db package.
+   * field be set, this method will automatically turn it to the extensional form,
+   * eg. "html" to the standard mime form "text/html" and,
+   * add the charset if it can be matched in mime-db package.
    *
    * Examples:
    * <pre>
