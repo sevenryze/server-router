@@ -1,7 +1,7 @@
 {
   "name": "@sevenryze/server",
   "private": false,
-  "version": "1.0.2",
+  "version": "1.1.0",
   "scripts": {
     "test": "jest",
     "test-coverage": "jest --collectCoverage --mapCoverage",
@@ -13,7 +13,8 @@
     "@types/node": "^9.6.1",
     "etag": "^1.8.1",
     "fresh": "^0.5.2",
-    "request-ip": "^2.0.2"
+    "request-ip": "^2.0.2",
+    "serve-static": "^1.13.2"
   },
   "devDependencies": {
     "@types/jest": "^22.2.2",
@@ -24,10 +25,17 @@
     "typescript": "^2.8.1"
   },
   "description": "Backend Server Framework of DeepDigEst Inc.",
-  "keywords": ["DeepDigEst Inc.", "Server", "Kerberos", "Framework"],
+  "keywords": [
+    "DeepDigEst Inc.",
+    "Server",
+    "Kerberos",
+    "Framework"
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "homepage": "https://www.deepdigest.com",
   "bugs": {
     "url": "https://github.com/sevenryze",
@@ -50,7 +58,15 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json"],
-    "testMatch": ["<rootDir>/test/**/*.ts?(x)"]
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ],
+    "testMatch": [
+      "<rootDir>/test/**/*.ts?(x)"
+    ]
   }
 }

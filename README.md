@@ -5,6 +5,7 @@
 - [Big Picture, as I said](#big-picture-as-i-said)
 - [How to use](#how-to-use)
 - [API](#api)
+  - [`serveStatic`](#servestatic)
   - [`Router()`](#router)
   - [`dde_mount(path, router)`](#ddemountpath-router)
   - [`dde_METHOD(task)`](#ddemethodtask)
@@ -93,6 +94,11 @@ let router = new Router();
 ```
 
 # API
+
+## `serveStatic`
+
+The static files serve utility shameless borrowed from node module `serve-static`.
+See more info: https://github.com/expressjs/serve-static
 
 ## `Router()`
 
