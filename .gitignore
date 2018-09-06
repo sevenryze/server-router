@@ -1,9 +1,11 @@
-# Build temp files
+# IDE temp files
 .idea
-.vscode
 
 # node_modules
 node_modules
 
 # Dist files
 dist 
+
+# Test related files
+coverage

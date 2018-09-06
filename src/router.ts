@@ -9,6 +9,7 @@ import { buildRunList } from "./runList";
 import { schedule } from "./schedule";
 import { RequestProto, requestProto } from "./prototype/request";
 import { ResponseProto, responseProto } from "./prototype/response";
+import { AddressInfo } from "net";
 
 /**********************************************************************************************************************/
 export class Router {
@@ -113,6 +114,7 @@ export class Router {
     return new Promise((resolve, reject) => {
       this.internalServer.listen(port, (error: Error) => {
         if (error) reject(error);
+
         resolve(this);
       });
     });
@@ -125,6 +127,10 @@ export class Router {
         resolve(this);
       });
     });
+  };
+
+  public dde_getListeningAddress = () => {
+    return this.internalServer.address() as AddressInfo;
   };
 
   // This is actual handler of the incoming message.

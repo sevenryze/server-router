@@ -4,7 +4,7 @@
 import * as superagent from "superagent";
 
 // Import own libraries
-import { Router } from "../src/router";
+import { Router } from "../router";
 
 /**********************************************************************************************************************/
 describe("Router", () => {
@@ -27,9 +27,11 @@ describe("Router", () => {
       response.dde_send();
     });
 
-    await router.dde_listen(7777);
+    await router.dde_listen(0);
 
-    await superagent.get("http://localhost:7777");
+    let address = router.dde_getListeningAddress();
+
+    await superagent.get(`http://localhost:${address.port}`);
 
     await router.dde_close();
   });

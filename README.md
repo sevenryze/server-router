@@ -1,36 +1,47 @@
 # Table of Content
 
-- [Table of Content](#table-of-content)
-- [Tool Story](#tool-story)
-- [Big Picture, as I said](#big-picture-as-i-said)
-- [How to use](#how-to-use)
-- [API](#api)
-  - [`serveStatic`](#servestatic)
-  - [`Router()`](#router)
-  - [`dde_mount(path, router)`](#ddemountpath-router)
-  - [`dde_METHOD(task)`](#ddemethodtask)
-  - [Helpers on `Request`](#helpers-on-request)
-    - [`request.dde_originalUrl`: string](#requestddeoriginalurl-string)
-    - [`request.dde_parsedUrl`: Url](#requestddeparsedurl-url)
-    - [`request.dde_queryString`: object](#requestddequerystring-object)
-    - [`request.dde_response`: Respond](#requestdderesponse-respond)
-    - [`request.dde_method`: string](#requestddemethod-string)
-    - [`request.dde_headers`: object](#requestddeheaders-object)
-    - [`request.dde_taskList`: Task[]](#requestddetasklist-task)
-    - [`request.tmp\_\*`: any](#requesttmp-any)
-    - [`request.dde_getIp()`: () => string](#requestddegetip-string)
-  - [Helpers on `Response`](#helpers-on-response)
-    - [`response.dde_request`: Request](#responsedderequest-request)
-    - [`response.dde_setHeader(object)`: (object) => Respond](#responseddesetheaderobject-object-respond)
-    - [`response.dde_setStatus(code)`: (code: number) => Response](#responseddesetstatuscode-code-number-response)
-    - [`response.dde_send(body)`: (body?) => Response](#responseddesendbody-body-response)
-  - [`dde_listen(port)`](#ddelistenport)
-  - [`dde_close()`](#ddeclose)
-- [Build and Test](#build-and-test)
-  - [Build](#build)
-  - [Test](#test)
-- [Code of Conduct](#code-of-conduct)
-- [Contributor](#contributor)
+<!-- prettier-ignore-start -->
+
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+* [Table of Content](#table-of-content)
+* [Tool Story](#tool-story)
+* [Big Picture, as I said](#big-picture-as-i-said)
+* [How to use](#how-to-use)
+* [API](#api)
+	* [`serveStatic`](#servestatic)
+	* [`Router()`](#router)
+	* [`dde_mount(path, router)`](#dde_mountpath-router)
+	* [`dde_METHOD(task)`](#dde_methodtask)
+	* [Helpers on `Request`](#helpers-on-request)
+		* [`request.dde_originalUrl`: string](#requestdde_originalurl-string)
+		* [`request.dde_parsedUrl`: Url](#requestdde_parsedurl-url)
+		* [`request.dde_queryString`: object](#requestdde_querystring-object)
+		* [`request.dde_response`: Respond](#requestdde_response-respond)
+		* [`request.dde_method`: string](#requestdde_method-string)
+		* [`request.dde_headers`: object](#requestdde_headers-object)
+		* [`request.dde_taskList`: Task[]](#requestdde_tasklist-task)
+		* [`request.tmp_*`: any](#requesttmp_-any)
+		* [`request.dde_getIp()`: () => string](#requestdde_getip-string)
+	* [Helpers on `Response`](#helpers-on-response)
+		* [`response.dde_request`: Request](#responsedde_request-request)
+		* [`response.dde_setHeader(object)`: (object) => Respond](#responsedde_setheaderobject-object-respond)
+		* [`response.dde_setStatus(code)`: (code: number) => Response](#responsedde_setstatuscode-code-number-response)
+		* [`response.dde_send(body)`: (body?) => Response](#responsedde_sendbody-body-response)
+	* [`dde_listen(port)`](#dde_listenport)
+	* [`dde_close()`](#dde_close)
+	* [`dde_getListeningAddress()`](#dde_getlisteningaddress)
+* [Build and Test](#build-and-test)
+	* [Build](#build)
+	* [Test](#test)
+* [Code of Conduct](#code-of-conduct)
+* [Contributor](#contributor)
+
+<!-- /code_chunk_output -->
+
+<!-- prettier-ignore-end -->
 
 # Tool Story
 
@@ -48,7 +59,7 @@ Good luck for this project!
 
 # Big Picture, as I said
 
-The HTTP Request - by our simple view point - is consist of below parts:
+The HTTP Request - by the simple view point - is consist of below parts:
 
 1.  HTTP method: GET, PUT, POST or DELETE.
 2.  HTTP path: /api/v1/hello?foo=bar&a=b
@@ -112,8 +123,8 @@ let router = new Router();
 
 ## `dde_mount(path, router)`
 
-* `path`: the path mounted by sub-router.
-* `router`: the sub-router.
+- `path`: the path mounted by sub-router.
+- `router`: the sub-router.
 
 Mount different `Router` hierarchically to compose the whole response chain.
 
@@ -125,7 +136,7 @@ router_v1.dde_mount("/user", router_user);
 
 ## `dde_METHOD(task)`
 
-* `task: (request, response, next) => void`: The task function will get three parameters - `request`, `response`, `next`, corresponding the Request, Respond of http request and the control passing function `next()` respectively.
+- `task: (request, response, next) => void`: The task function will get three parameters - `request`, `response`, `next`, corresponding the Request, Respond of http request and the control passing function `next()` respectively.
 
 Register the task processing function into router. We support a few common `http method`:
 
@@ -186,9 +197,9 @@ The http headers parsed into object format.
 
 The tasks waiting for this request.
 
-### `request.tmp\_\*`: any
+### `request.tmp_*`: any
 
-The app context variable for simply share state between tasks. Must be the tmp\*\* format.
+The app context variable for simply share state between tasks. Must be the `tmp_*` format.
 
 ### `request.dde_getIp()`: () => string
 
@@ -207,7 +218,7 @@ Points to the accompanied request object.
 
 ### `response.dde_setHeader(object)`: (object) => Respond
 
-* object <string> - Object used to set the headers, such as { Accept: "text/plain", "X-API-Key": "dde" }.
+- object <string> - Object used to set the headers, such as { Accept: "text/plain", "X-API-Key": "dde" }.
 
 Set header `key` to its `value`. If the `Content-Type` field is going to be set, this method will automatically turn the value to extensional form, eg."html" to the standard mime forms "text/html", and add the charset if it can be matched in mime-db package.
 
@@ -227,7 +238,7 @@ response.dde_setHeader({ "Content-Type": "bin" });
 
 ### `response.dde_setStatus(code)`: (code: number) => Response
 
-* code <number> - Http status code number such as "404"
+- code <number> - Http status code number such as "404"
 
 Set the status `code` of the response.
 
@@ -239,7 +250,7 @@ response.dde_setStatus(404);
 
 ### `response.dde_send(body)`: (body?) => Response
 
-* body <string | object | buffer> - Can be a string such as `"some string"`, an object such as `{some: "haha"}` and a buffer such as `new Buffer("some buffer")`.
+- body <string | object | buffer> - Can be a string such as `"some string"`, an object such as `{some: "haha"}` and a buffer such as `new Buffer("some buffer")`.
 
 Send response to the remote client, and this method will terminate the underlying socket session.
 
@@ -251,9 +262,13 @@ response.dde_send("<p>some html</p>");
 
 ## `dde_listen(port)`
 
-* port: The port listening to.
+- port: The port listening to.
 
 Listen the specific port.
+
+If there are under tests case or would like to get a temp port, you should use number `0` as the argument.
+
+If port is omitted or is 0, the operating system will assign an arbitrary unused port, which can be retrieved by using Router.dde_getListeningAddress().port after the 'listening' event has been emitted.
 
 ```
 router.dde_listen(7777);
@@ -266,6 +281,10 @@ Close the server.
 ```
 router.dde_close();
 ```
+
+## `dde_getListeningAddress()`
+
+Get the bounding server address info.
 
 # Build and Test
 
@@ -293,13 +312,13 @@ npm run test-coverage
 
 # Code of Conduct
 
-1.  You are not rambo. Remember that together we are a team.
+1.  You are not rambo. Remember that, together, we are a team.
 2.  Please invite someone to review your code, again, you are not immortal.
 3.  Never blame other workmate for the quality of code set, you should know that boss already fined the poor guy.
 
 # Contributor
 
-* Seven Ryze - XmT Inc.
-* Cris - XmT Inc.
-* Becky - XmT Inc.
-* ~~Rangeragent - XmT Inc.~~
+- Seven Ryze - XmT Inc.
+- Cris - XmT Inc.
+- Becky - XmT Inc.
+- ~~Rangeragent - XmT Inc.~~

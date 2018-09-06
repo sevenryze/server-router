@@ -7,11 +7,11 @@ import { Task, Request, Response } from "./router";
 
 /**********************************************************************************************************************/
 /**
- * Actually run the matching tasks.
+ * Actually run all matching tasks.
  *
- * @param {Task[]} runList - the tasks waiting for execution.
- * @param {Request} request - the manicured request object.
- * @param {Response} response - the manicured response object.
+ * @param runList The tasks list waiting for execution.
+ * @param request The manicured request object.
+ * @param response The manicured response object.
  */
 export function schedule(
   runList: Task[],

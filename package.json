@@ -1,34 +1,32 @@
 {
-  "name": "@sevenryze/server",
-  "private": false,
-  "version": "1.1.0",
+  "name": "@sevenryze/server-router",
+  "version": "1.0.0",
   "scripts": {
     "test": "jest",
-    "test-coverage": "jest --collectCoverage --mapCoverage",
+    "test-coverage": "jest --coverage",
     "dev": "tsc --watch --project .",
     "build": "tsc --project .",
     "commit": "npm run build && npm run test && npm publish --access=public"
   },
   "dependencies": {
-    "@types/node": "^9.6.1",
+    "@types/node": "^10.5.2",
     "etag": "^1.8.1",
     "fresh": "^0.5.2",
-    "request-ip": "^2.0.2",
+    "request-ip": "^2.1.1",
     "serve-static": "^1.13.2"
   },
   "devDependencies": {
-    "@types/jest": "^22.2.2",
-    "jest": "^22.4.3",
-    "prettier": "^1.11.1",
-    "superagent": "^3.8.2",
-    "ts-jest": "^22.4.2",
-    "typescript": "^2.8.1"
+    "@types/jest": "^23.1.5",
+    "jest": "^23.4.0",
+    "prettier": "^1.13.7",
+    "superagent": "^3.8.3",
+    "ts-jest": "^23.0.0",
+    "typescript": "^2.9.2"
   },
-  "description": "Backend Server Framework of DeepDigEst Inc.",
+  "description": "Backend Server Framework of DeepDigest Inc.",
   "keywords": [
-    "DeepDigEst Inc.",
-    "Server",
-    "Kerberos",
+    "DeepDigest Inc.",
+    "Server Router",
     "Framework"
   ],
   "main": "dist/index.js",
@@ -51,22 +49,6 @@
     "url": "https://github.com/sevenryze"
   },
   "engines": {
-    "node": ">= 8"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json"
-    ],
-    "testMatch": [
-      "<rootDir>/test/**/*.ts?(x)"
-    ]
+    "node": ">= 10"
   }
 }

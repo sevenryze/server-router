@@ -3,7 +3,7 @@
 // Import third-party libraries
 
 // Import own libraries
-import { schedule } from "../src/schedule";
+import { schedule } from "../schedule";
 
 /**********************************************************************************************************************/
 describe("schedule()", function() {

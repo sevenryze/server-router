@@ -4,7 +4,7 @@
 import * as superagent from "superagent";
 
 // Import own libraries
-import { Router } from "../src/router";
+import { Router } from "../../router";
 
 /**********************************************************************************************************************/
 describe("Response", () => {
@@ -17,9 +17,12 @@ describe("Response", () => {
         });
       });
 
-      await router.dde_listen(7777);
+      await router.dde_listen(0);
 
-      let response = await superagent.get("http://localhost:7777");
+      let address = router.dde_getListeningAddress();
+
+      let response = await superagent.get(`http://localhost:${address.port}`);
+
       expect(response.type).toBe("application/json");
       expect(response.body.json).toBe("hello!");
 
@@ -32,9 +35,11 @@ describe("Response", () => {
         response.dde_send("hello text!");
       });
 
-      await router.dde_listen(7777);
+      await router.dde_listen(0);
+      let address = router.dde_getListeningAddress();
 
-      let response = await superagent.get("http://localhost:7777");
+      let response = await superagent.get(`http://localhost:${address.port}`);
+
       expect(response.type).toBe("text/plain");
       expect(response.text).toBe("hello text!");
 
@@ -46,9 +51,11 @@ describe("Response", () => {
       router.dde_common(function(request, response) {
         response.dde_send(new Buffer("sevenryze"));
       });
-      await router.dde_listen(7777);
+      await router.dde_listen(0);
+      let address = router.dde_getListeningAddress();
 
-      let response = await superagent.get("http://localhost:7777");
+      let response = await superagent.get(`http://localhost:${address.port}`);
+
       expect(response.type).toBe("application/octet-stream");
 
       await router.dde_close();
@@ -60,9 +67,11 @@ describe("Response", () => {
         response.dde_setHeader({ "content-type": "html" });
         response.dde_send("<p>hello</p>");
       });
-      await router.dde_listen(7777);
+      await router.dde_listen(0);
+      let address = router.dde_getListeningAddress();
 
-      let response = await superagent.get("http://localhost:7777");
+      let response = await superagent.get(`http://localhost:${address.port}`);
+
       expect(response.type).toBe("text/html");
 
       await router.dde_close();
@@ -81,9 +90,11 @@ describe("Response", () => {
           json: "hello 3!"
         });
       });
-      await router.dde_listen(7777);
+      await router.dde_listen(0);
+      let address = router.dde_getListeningAddress();
 
-      let response = await superagent.get("http://localhost:7777");
+      let response = await superagent.get(`http://localhost:${address.port}`);
+
       expect(response.type).toBe("application/json");
       expect(response.body.json).toBe("hello 1!");
 
@@ -101,9 +112,11 @@ describe("Response", () => {
         });
         response.dde_send();
       });
-      await router.dde_listen(7777);
+      await router.dde_listen(0);
+      let address = router.dde_getListeningAddress();
 
-      let response = await superagent.get("http://localhost:7777");
+      let response = await superagent.get(`http://localhost:${address.port}`);
+
       let headers = response.header;
       expect(headers["x-powered-by"]).toBe("XmT");
       expect(headers["set-cookie"][0]).toBe("123");
@@ -120,9 +133,11 @@ describe("Response", () => {
         });
         response.dde_send();
       });
-      await router.dde_listen(7777);
+      await router.dde_listen(0);
+      let address = router.dde_getListeningAddress();
 
-      let response = await superagent.get("http://localhost:7777");
+      let response = await superagent.get(`http://localhost:${address.port}`);
+
       let headers = response.header;
       expect(headers["content-type"]).toBe("application/json; charset=utf-8");
 
@@ -137,9 +152,11 @@ describe("Response", () => {
         });
         response.dde_send();
       });
-      await router.dde_listen(7777);
+      await router.dde_listen(0);
+      let address = router.dde_getListeningAddress();
 
-      let response = await superagent.get("http://localhost:7777");
+      let response = await superagent.get(`http://localhost:${address.port}`);
+
       let headers = response.header;
       expect(headers["content-type"]).toBe("text/html; charset=utf-8");
 
@@ -154,9 +171,11 @@ describe("Response", () => {
         });
         response.dde_send();
       });
-      await router.dde_listen(7777);
+      await router.dde_listen(0);
+      let address = router.dde_getListeningAddress();
 
-      let response = await superagent.get("http://localhost:7777");
+      let response = await superagent.get(`http://localhost:${address.port}`);
+
       let headers = response.header;
       expect(headers["content-type"]).toBe("text/plain; charset=utf-8");
 
@@ -171,9 +190,11 @@ describe("Response", () => {
         });
         response.dde_send();
       });
-      await router.dde_listen(7777);
+      await router.dde_listen(0);
+      let address = router.dde_getListeningAddress();
 
-      let response = await superagent.get("http://localhost:7777");
+      let response = await superagent.get(`http://localhost:${address.port}`);
+
       let headers = response.header;
       expect(headers["content-type"]).toBe("application/octet-stream");
 
@@ -187,11 +208,14 @@ describe("Response", () => {
       router.dde_common(function(request, response) {
         response.dde_setStatus(717).dde_send();
       });
-      await router.dde_listen(7777);
+      await router.dde_listen(0);
+
+      let address = router.dde_getListeningAddress();
 
       let response = await superagent
-        .get("http://localhost:7777")
+        .get(`http://localhost:${address.port}`)
         .ok(() => true);
+
       let statusCode = response.status;
       expect(statusCode).toBe(717);
 

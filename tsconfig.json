@@ -2,12 +2,13 @@
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "es2017",
+    "target": "esnext",
     "sourceMap": true,
     "removeComments": true,
     "noImplicitAny": false,
     "outDir": "dist",
     "declaration": true,
+    "declarationMap": true,
     "declarationDir": "dist"
   },
   "exclude": ["node_modules", "dist"]
