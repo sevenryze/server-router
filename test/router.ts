@@ -19,14 +19,14 @@ describe("Router", () => {
     router.common((request, response) => {
       array.push(3);
       expect(array).toEqual([1, 2, 3]);
-      response.send();
+      response.dd_send();
     });
 
     await router.listen(0);
 
     const address = router.getListeningAddress();
 
-    await superagent.get(`http://localhost:${address.port}`);
+    await superagent.get(`http://localhost:${address.port}/`);
 
     await router.close();
   });

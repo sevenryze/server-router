@@ -23,7 +23,7 @@
 		* [`request.method`: string](#requestmethod-string)
 		* [`request.headers`: object](#requestheaders-object)
 		* [`request.taskList`: Task[]](#requesttasklist-task)
-		* [`request.getIp()`: () => string](#requestgetip-string)
+		* [`request.dd_getIp()`: () => string](#requestdd_getIp-string)
 		* [`request.tmp_*`: any](#requesttmp_-any)
 	* [Helpers on `Response`](#helpers-on-response)
 		* [`response.request`: Request](#responserequest-request)
@@ -203,12 +203,12 @@ The http headers parsed into object format.
 
 The tasks waiting for this request.
 
-### `request.getIp()`: () => string
+### `request.dd_getIp()`: () => string
 
 Get the client ip and be able to handle behind proxy case.
 
 ```js
-request.getIp();
+request.dd_getIp();
 // => "127.0.0.1"
 ```
 

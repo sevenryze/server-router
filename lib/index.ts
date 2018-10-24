@@ -1,12 +1,20 @@
-import { createServer, Server } from "http";
+import { createServer, IncomingMessage, Server, ServerResponse } from "http";
 import { AddressInfo } from "net";
+import staticServe from "serve-static";
 import { parse } from "url";
-import { ITask } from "./interface";
+import { Debug } from "./helper/debugger";
+import { RouterError } from "./helper/router-error";
+import { IRequest, IResponse, ITask } from "./interface";
 import { requestProto } from "./prototype/request";
 import { responseProto } from "./prototype/response";
 import { buildRunList } from "./runList";
 import { schedule } from "./schedule";
-export { serveStatic } from "serve-static";
+
+const debug = Debug(__filename);
+
+export function serveStatic(root: string, options?: staticServe.ServeStaticOptions) {
+  return (staticServe(root, options) as unknown) as ITask;
+}
 
 export class Router {
   public serialList: Array<ITask | Router> = [];
@@ -63,7 +71,7 @@ export class Router {
     // Set the current router to root router.
     this.recurseSetAbsolutePath("root");
 
-    this.internalServer = createServer(this.incomingRequestHandler as any);
+    this.internalServer = createServer(this.incomingRequestHandler);
 
     return new Promise((resolve, reject) => {
       this.internalServer.listen(port, (error: Error) => {
@@ -82,6 +90,8 @@ export class Router {
         if (error) {
           reject(error);
         }
+
+        debug(`Server closed successfully`);
         resolve(this);
       });
     });
@@ -93,7 +103,7 @@ export class Router {
 
   // This recurseSetAbsolutePathCounter will be equal to the number of all routers.
   private static recurseSetAbsolutePathCounter: number = 0;
-  private internalServer: Server;
+  private internalServer!: Server;
 
   private addTask = (httpMethod: string, task: ITask): void => {
     if (typeof task !== "function") {
@@ -130,42 +140,43 @@ export class Router {
   };
 
   // This is actual handler of the incoming message.
-  private incomingRequestHandler = (request: Request, response: Response): void => {
+  private incomingRequestHandler = (request: IncomingMessage, response: ServerResponse): void => {
+    const requestAppend: any = {};
+    const responseAppend: any = {};
+
+    debug(`Get method: ${request.method} on url: ${request.url}`);
+
     // Protect the original URL from unintentional polluting.
-    (request as any).originalUrl = request.url;
+    requestAppend.originalUrl = request.url;
 
     // Store the url-related info.
-    (request as any).parsedUrl = parse(request.url, true);
-    (request as any).queryString = request.parsedUrl.query;
+    requestAppend.parsedUrl = parse(request.url!, true);
+    requestAppend.queryString = requestAppend.parsedUrl.query;
 
-    (request as any).method = request.method;
-    (request as any).headers = request.headers;
+    requestAppend.method = request.method;
+    requestAppend.headers = request.headers;
+
+    // This taskList is the main ordered task list the current request matched.
+    // Important!
+    requestAppend.taskList = [];
 
     // Point to each other.
-    (request as any).response = response;
-    (response as any).request = request;
+    requestAppend.response = response;
+    responseAppend.request = request;
 
     // Merge properties of our Request and Response prototypes
     // to the incoming request and response objects.
-    Object.assign(request, requestProto);
-    Object.assign(response, responseProto);
-
-    // This taskList is the main ordered task list that the current request will call.
-    // Important!
-    (request as any).taskList = [];
+    Object.assign(request, requestAppend, requestProto);
+    Object.assign(response, responseAppend, responseProto);
 
     // Build the runList.
-    buildRunList(this, request, request.taskList);
+    buildRunList(this, (request as unknown) as IRequest, ((request as unknown) as IRequest).taskList);
 
     // Run the tasks.
-    schedule(request.taskList, request, response);
+    schedule(
+      ((request as unknown) as IRequest).taskList,
+      (request as unknown) as IRequest,
+      (response as unknown) as IResponse
+    );
   };
-}
-
-// tslint:disable-next-line:max-classes-per-file
-class RouterError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "RouterError";
-  }
 }

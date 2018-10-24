@@ -9,7 +9,7 @@ import { IRequest, ITask } from "./interface";
  * @param {ITask[]} runList - the pointer points to the runList array
  */
 export function buildRunList(router: Router, request: IRequest, runList: ITask[]) {
-  recurseBuildRunList(router, (request as any).method.toLowerCase(), request.parsedUrl.pathname, runList);
+  recurseBuildRunList(router, request.method.toLowerCase(), request.parsedUrl.pathname!, runList);
 }
 
 /**

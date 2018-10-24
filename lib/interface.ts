@@ -1,47 +1,25 @@
+import { IncomingMessage } from "http";
 import { Url } from "url";
 
 export interface ITask {
-  (request: IRequest, response: IResponse, next?: () => void): void;
+  (request: IRequest, response: IResponse, next: () => void): void;
 
   mountHttpMethod?: string;
 }
 
+// Should hidden underlaying node api from users.
+// So we don't extend IncomingMessage interface from node.
 export interface IRequest extends IRequestProto {
   /**
    * Original, unprocessed request URL
    */
   readonly originalUrl: string;
-
   /**
    * Parsed HTTP URL
    *
-   * <pre>
-   * ┌─────────────────────────────────────────────────────────────────────────────────────────────┐
-   * │                                            href                                             │
-   * ├──────────┬──┬─────────────────────┬─────────────────────┬───────────────────────────┬───────┤
-   * │ protocol │  │        auth         │        host         │           path            │ hash  │
-   * │          │  │                     ├──────────────┬──────┼──────────┬────────────────┤       │
-   * │          │  │                     │   hostname   │ port │ pathname │     search     │       │
-   * │          │  │                     │              │      │          ├─┬──────────────┤       │
-   * │          │  │                     │              │      │          │ │    query     │       │
-   * "  https:   //    user   :   pass   @ sub.host.com : 8080   /p/a/t/h  ?  query=string   #hash "
-   * │          │  │          │          │   hostname   │ port │          │                │       │
-   * │          │  │          │          ├──────────────┴──────┤          │                │       │
-   * │ protocol │  │ username │ password │        host         │          │                │       │
-   * ├──────────┴──┼──────────┴──────────┼─────────────────────┤          │                │       │
-   * │   origin    │                     │       origin        │ pathname │     search     │ hash  │
-   * ├─────────────┴─────────────────────┴─────────────────────┴──────────┴────────────────┴───────┤
-   * │                                            href                                             │
-   * └─────────────────────────────────────────────────────────────────────────────────────────────┘
-   *
-   * (all spaces in the "" line should be ignored -- they are purely for formatting)
-   * </pre>
+   * See: https://nodejs.org/dist/latest-v11.x/docs/api/url.html
    */
   readonly parsedUrl: Url;
-  /**
-   * The object format query string key value pairs.
-   */
-  readonly queryString: any;
   /**
    * Point to response object.
    */
@@ -52,8 +30,10 @@ export interface IRequest extends IRequestProto {
   readonly method: string;
   /**
    * Http headers, stored by object format.
+   *
+   * Header names are lower-cased.
    */
-  readonly headers: any;
+  readonly headers: IncomingMessage["headers"];
   /**
    * The tasks for this request, line by serially.
    *
@@ -63,12 +43,11 @@ export interface IRequest extends IRequestProto {
 
   /**
    * The app context variable for simply share state.
-   *
-   * Must be tmp_* format.
-   *
-   * Eg. request.tmp_body
+   * e.g. `request.share.something`
    */
-  [propName: string]: any;
+  share: {
+    [propName: string]: any;
+  };
 }
 
 export interface IResponse extends IResponseProto {
@@ -82,16 +61,15 @@ export interface IRequestProto {
   /**
    * Get the client ip.
    *
-   * <pre>
    * Examples:
-   *  request.getIp();
+   * ```
+   *  request.dd_getIp();
    *  // => "127.0.0.1"
-   * </pre>
-   *
+   * ```
    * Notes:
-   *  Be able to handle the proxy situation.
+   *  The function could be able to handle the proxy situation.
    */
-  getIp: () => string;
+  dd_getIp: () => string;
 }
 
 export interface IResponseProto {
@@ -102,7 +80,8 @@ export interface IResponseProto {
    * add the charset if it can be matched in mime-db package.
    *
    * Examples:
-   * <pre>
+   *
+   * ```
    *  response.setHeader({ "Accept": "text/plain", "X-API-Key": "xmt" });
    *  // => Accept: "text/plain"
    *  // => X-API-Key: "xmt"
@@ -115,53 +94,45 @@ export interface IResponseProto {
    *
    *  response.setHeader({ "Content-Type": "bin" });
    *  // => Content-Type: "application/octet-stream"
-   *  </pre>
+   * ```
    *
-   * Params:
-   *  @keyValuePair(Object):
-   *      Object that is used to set the headers,
-   *      such as { Accept: "text/plain", "X-API-Key": "xmt" }.
-   *
-   * Returns:
-   *  (ServerResponse):
-   *      Return this `response` object for chain-able.
+   * @param object Object used to set the headers, such as { Accept: "text/plain", "X-API-Key": "xmt" }.
+   * @returns Return this `response` object for chain-able.
    */
-  setHeader: (object: object) => this;
+  dd_setHeader: (
+    object: {
+      [i: string]: any;
+    }
+  ) => this;
 
   /**
    * Set status `code` of this response.
    *
    * Examples:
+   * ```
    *  response.setStatus(404);
-   *
-   * Params:
-   *  @code(Number):
-   *      Http status code number such as "404".
-   *
-   * Returns:
-   *  (ServerResponse):
-   *      Return this `response` object for chain-able.
+   * ```
+   * @param code Status code number such as "404".
+   * @returns Return this `response` object for chain-able.
    */
-  setStatus: (code: number) => this;
+  dd_setStatus: (code: number) => this;
 
   /**
    * Send a response to the remote client, and
    * this method will terminate the underlying session.
    *
    * Examples:
+   * ```
    *  response.send(new Buffer("some buffer"));
    *  response.send({ some: "json" });
    *  response.send("<p>some html</p>");
+   * ```
    *
-   * Params:
-   *  @body(String|Object|Buffer):
-   *      A string such as `"some string"`.
-   *      A object such as `{ some: "object" }`.
-   *      A buffer such as `new Buffer{"some buffer"}`.
-   *
-   * Returns:
-   *  (ServerResponse):
-   *      Return this `response` object for chain-able.
+   * @param body The response body, such as:
+   *  1. A string - `"some string"`.
+   *  1. A object - `{ some: "object" }`.
+   *  1. A buffer - `new Buffer{"some buffer"}`.
+   * @returns Return this `response` object for chain-able.
    */
-  send: (body?: any) => this;
+  dd_send: (data?: string | Buffer | object) => this;
 }

@@ -1,12 +1,13 @@
 import etag from "etag";
 import fresh from "fresh";
-import { IResponseProto } from "../interface";
+import { ServerResponse } from "http";
+import { Debug } from "../helper/debugger";
+import { IResponse, IResponseProto } from "../interface";
+
+const debug = Debug(__filename);
 
 export let responseProto: IResponseProto = {
-  setHeader(keyValuePair: object) {
-    // The Object.keys(object) returns an array that contains
-    // the names of all enumerable own (non-inherited)
-    // properties of @object.
+  dd_setHeader(keyValuePair) {
     for (const key of Object.keys(keyValuePair)) {
       let value = keyValuePair[key];
 
@@ -26,96 +27,104 @@ export let responseProto: IResponseProto = {
             break;
         }
       }
-      this.setHeader(key, value);
+
+      ((this as unknown) as ServerResponse).setHeader(key, value);
     }
+
     return this;
   },
 
-  setStatus(code: number) {
-    this.statusCode = code;
+  dd_setStatus(code) {
+    ((this as unknown) as ServerResponse).statusCode = code;
     return this;
   },
 
-  send(body?: any) {
+  dd_send(data) {
+    const self = (this as unknown) as ServerResponse;
+
     // Allow for multi call.
-    if (this.finished) {
+    if (self.finished) {
       return this;
     }
 
-    if (!body) {
-      this.end();
+    // skip body for HEAD request
+    // skip empty body
+    if (!data || (this as IResponse).request.method === "HEAD") {
+      self.end();
       return this;
-    } else {
-      let chunk = body;
-      const contentType = this.getHeader("Content-Type");
-      const encoding = "utf8";
-      let length: number;
+    }
 
-      switch (typeof chunk) {
-        // String defaulting to text/plain.
-        case "string":
-          // in case have not set `Content-Type`.
+    const encoding = "utf8";
+    let length: number | undefined;
+
+    const contentType = self.getHeader("Content-Type");
+    switch (typeof data) {
+      // String defaulting to text/plain.
+      case "string":
+        // in case have not set `Content-Type`.
+        if (!contentType) {
+          this.dd_setHeader({ "Content-Type": "text" });
+        }
+        break;
+
+      // `typeof` an Array, Object, Buffer will be "object".
+      case "object":
+        // In case a Buffer here.
+        if (Buffer.isBuffer(data)) {
           if (!contentType) {
-            this.setHeader({ "Content-Type": "text" });
+            this.dd_setHeader({ "Content-Type": "bin" });
           }
-          break;
-
-        // `typeof` an Array, Object, Buffer will be "object".
-        case "object":
-          // In case a Buffer here.
-          if (Buffer.isBuffer(chunk)) {
-            if (!contentType) {
-              this.setHeader({ "Content-Type": "bin" });
-            }
-          } else {
-            // Must be an Array or Object.
-            if (!contentType) {
-              this.setHeader({ "Content-Type": "json" });
-            }
-            chunk = JSON.stringify(chunk, null, 4);
+        } else {
+          // Must be an Array or Object.
+          if (!contentType) {
+            this.dd_setHeader({ "Content-Type": "json" });
           }
-          break;
-      }
 
-      // Populate Content-Length.
-      if (chunk) {
-        if (!Buffer.isBuffer(chunk)) {
-          chunk = new Buffer(chunk, encoding);
+          try {
+            data = JSON.stringify(data);
+          } catch {
+            data = undefined;
+          }
         }
-        length = chunk.length;
-        this.setHeader({ "Content-Length": length });
+        break;
+    }
+
+    // Populate Content-Length.
+    if (data) {
+      if (!Buffer.isBuffer(data)) {
+        data = Buffer.from(data, encoding);
       }
 
-      // Populate ETag.
-      if (!this.getHeader("etag") && length) {
-        const generatedEtag = etag(chunk, { weak: true });
-        if (generatedEtag) {
-          this.setHeader({ ETag: generatedEtag });
-        }
-      }
+      length = (data as Buffer).length;
+      this.dd_setHeader({ "Content-Length": length });
+    }
 
-      // Check if the remote client cache is fresh.
-      const freshness = fresh(this.request, this);
-      if (freshness) {
-        this.statusCode = 304;
-      }
-
-      // Strip irrelevant headers in case of no needing.
-      if (this.statusCode === 204 || this.statusCode === 304) {
-        this.removeHeader("Content-Type");
-        this.removeHeader("Content-Length");
-        this.removeHeader("Transfer-Encoding");
-        chunk = "";
-      }
-
-      if (this.request.method === "HEAD") {
-        // skip body for HEAD
-        this.end();
-      } else {
-        // respond
-        this.end(chunk, encoding);
+    // Populate ETag.
+    if (length && !self.getHeader("etag")) {
+      const generatedEtag = etag(data as Buffer, { weak: true });
+      if (generatedEtag) {
+        this.dd_setHeader({ ETag: generatedEtag });
       }
     }
+
+    // Check if the remote client cache is fresh.
+    const isFresh = fresh((this as IResponse).request.headers, ((this as unknown) as ServerResponse).getHeaders());
+    debug(`Check freshness: ${isFresh}`);
+    if (isFresh) {
+      self.statusCode = 304;
+    }
+
+    // Strip irrelevant headers in case of no needing.
+    if (self.statusCode === 204 || self.statusCode === 304) {
+      self.removeHeader("Content-Type");
+      self.removeHeader("Content-Length");
+      self.removeHeader("Transfer-Encoding");
+      data = undefined;
+    }
+
+    // Respond
+    self.end(data, encoding);
+
     return this;
   }
 };

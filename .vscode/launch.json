@@ -17,7 +17,37 @@
       "console": "integratedTerminal",
       "outputCapture": "std", // 解决显示到process.stdout.write的内容不显示的问题
       "env": {
-        "DEBUG": "towerflow:*"
+        "DEBUG": "server-router:*"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Jest All",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": ["--runInBand", "--detectOpenHandles"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "windows": {
+        "program": "${workspaceFolder}/node_modules/jest/bin/jest"
+      },
+      "env": {
+        "DEBUG": "server-router:*"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Jest Current File",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": ["${relativeFile}"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "windows": {
+        "program": "${workspaceFolder}/node_modules/jest/bin/jest"
+      },
+      "env": {
+        "DEBUG": "server-router:*"
       }
     }
   ]
