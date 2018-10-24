@@ -1,0 +1,53 @@
+{
+  "name": "@sevenryze/server-router",
+  "version": "1.0.0",
+  "main": "dist/lib/index.js",
+  "files": [
+    "dist/",
+    "typings/"
+  ],
+  "scripts": {
+    "start": "towerflow start",
+    "production": "towerflow production",
+    "test": "towerflow test --env=jsdom",
+    "generate-config": "towerflow assistant --generate-config",
+    "remove-config": "towerflow assistant --remove-config"
+  },
+  "towerflow": {
+    "type": "node-lib"
+  },
+  "dependencies": {
+    "@types/node": "^10.12.0",
+    "@types/superagent": "^3.8.4",
+    "etag": "^1.8.1",
+    "fresh": "^0.5.2",
+    "request-ip": "^2.1.1",
+    "serve-static": "^1.13.2"
+  },
+  "devDependencies": {
+    "towerflow": "^1.1.1"
+  },
+  "description": "Backend Server Framework of DeepDigest Inc.",
+  "keywords": [
+    "DeepDigest Inc.",
+    "Server Router",
+    "Framework"
+  ],
+  "homepage": "https://www.deepdigest.com",
+  "bugs": {
+    "url": "https://github.com/sevenryze/server-router/issue",
+    "email": "sevenryze@gmail.com"
+  },
+  "license": "GPL-3.0",
+  "author": {
+    "name": "sevenryze",
+    "email": "sevenryze@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sevenryze/server-router"
+  },
+  "engines": {
+    "node": ">= 10"
+  }
+}
