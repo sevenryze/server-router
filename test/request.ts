@@ -1,27 +1,27 @@
 import superagent from "superagent";
-import { Router } from "../lib/router";
+import { Router } from "../lib";
 
 /**********************************************************************************************************************/
-describe("Request", function() {
-  describe("dde_getIp()", function() {
+describe("Request", () => {
+  describe("getIp()", () => {
     test("应该返回客户端IP", async () => {
       const router = new Router();
 
-      router.dde_common((request, response) => {
-        let ip = request.dde_getIp();
+      router.common((request, response) => {
+        const ip = request.getIp();
 
         expect(ip).toEqual("::ffff:127.0.0.1");
 
-        response.dde_send();
+        response.send();
       });
 
-      await router.dde_listen(0);
+      await router.listen(0);
 
-      let address = router.dde_getListeningAddress();
+      const address = router.getListeningAddress();
 
       await superagent.get(`http://localhost:${address.port}`);
 
-      await router.dde_close();
+      await router.close();
     });
   });
 });

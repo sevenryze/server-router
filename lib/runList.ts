@@ -1,29 +1,15 @@
-// Import node.js libraries
+import { Router } from ".";
+import { IRequest, ITask } from "./interface";
 
-// Import third-party libraries
-
-// Import own libraries
-import { Router, Task, Request } from "./router";
-
-/**********************************************************************************************************************/
 /**
  * Build the task list which is used by schedule to actually run.
  *
  * @param {Router} router - the matching router
- * @param {Request} request - the incoming request
- * @param {Task[]} runList - the pointer points to the runList array
+ * @param {IRequest} request - the incoming request
+ * @param {ITask[]} runList - the pointer points to the runList array
  */
-export function buildRunList(
-  router: Router,
-  request: Request,
-  runList: Task[]
-) {
-  recurseBuildRunList(
-    router,
-    (<any>request).method.toLowerCase(),
-    request.dde_parsedUrl.pathname,
-    runList
-  );
+export function buildRunList(router: Router, request: IRequest, runList: ITask[]) {
+  recurseBuildRunList(router, (request as any).method.toLowerCase(), request.parsedUrl.pathname, runList);
 }
 
 /**
@@ -33,34 +19,23 @@ export function buildRunList(
  * @param {Router} router - the matching router
  * @param {string} requestMethod - the http request method
  * @param {string} requestPathname - the matching pathname
- * @param {Task[]} runList - the pointer points to the runList array
+ * @param {ITask[]} runList - the pointer points to the runList array
  */
-function recurseBuildRunList(
-  router: Router,
-  requestMethod: string,
-  requestPathname: string,
-  runList: Task[]
-): void {
-  let matchPath = router.dde_absolutePath;
+function recurseBuildRunList(router: Router, requestMethod: string, requestPathname: string, runList: ITask[]): void {
+  const matchPath = router.absolutePath;
   if (requestPathname.substring(0, matchPath.length) === matchPath) {
-    for (let serialItem of router.dde_serialList) {
+    for (const serialItem of router.serialList) {
       // serialItem is a Router.
       if (serialItem instanceof Router) {
-        recurseBuildRunList(
-          serialItem,
-          requestMethod,
-          requestPathname,
-          runList
-        );
+        recurseBuildRunList(serialItem, requestMethod, requestPathname, runList);
       } else {
         // serialItem is a task function.
-        let task = serialItem;
-        if (task.dde_mountHttpMethod === "common") {
+        const task = serialItem;
+        if (task.mountHttpMethod === "common") {
           runList.push(task);
         } else if (
-          requestPathname === router.dde_absolutePath &&
-          (task.dde_mountHttpMethod === requestMethod ||
-            task.dde_mountHttpMethod === "all")
+          requestPathname === router.absolutePath &&
+          (task.mountHttpMethod === requestMethod || task.mountHttpMethod === "all")
         ) {
           runList.push(task);
         }

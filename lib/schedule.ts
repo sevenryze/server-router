@@ -1,6 +1,5 @@
-import { Request, Response, Task } from "./router";
+import { IRequest, IResponse, ITask } from "./interface";
 
-/**********************************************************************************************************************/
 /**
  * Actually run all matching tasks.
  *
@@ -8,11 +7,7 @@ import { Request, Response, Task } from "./router";
  * @param request The manicured request object.
  * @param response The manicured response object.
  */
-export function schedule(
-  runList: Task[],
-  request: Request,
-  response: Response
-): void {
+export function schedule(runList: ITask[], request: IRequest, response: IResponse): void {
   if (!Array.isArray(runList) || runList.length < 1 || !request || !response) {
     return;
   }

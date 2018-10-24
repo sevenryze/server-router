@@ -1,9 +1,9 @@
 import { schedule } from "../lib/schedule";
 
 /**********************************************************************************************************************/
-describe("schedule()", function() {
-  test("should call the task functions one by one", function(done) {
-    let array: number[] = [];
+describe("schedule()", () => {
+  test("should call the task functions one by one", done => {
+    const array: number[] = [];
 
     function task1(request: any, response: any, next: any) {
       array.push(1);
@@ -23,6 +23,6 @@ describe("schedule()", function() {
       done();
     }
 
-    schedule([task1, task2, task3], <any>{}, <any>{});
+    schedule([task1, task2, task3], {} as any, {} as any);
   });
 });

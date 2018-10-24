@@ -10,15 +10,13 @@ describe.only("Serve static files", () => {
     writeFileSync(__dirname + "/test.txt", textData);
 
     const router = new Router();
-    router.dde_common(serveStatic(__dirname));
-    await router.dde_listen(0);
+    router.common(serveStatic(__dirname));
+    await router.listen(0);
 
-    let address = router.dde_getListeningAddress();
+    const address = router.getListeningAddress();
 
-    let response = await superagent.get(
-      `http://localhost:${address.port}/test.txt`
-    );
+    const response = await superagent.get(`http://localhost:${address.port}/test.txt`);
     expect(response.text).toEqual(textData);
-    await router.dde_close();
+    await router.close();
   });
 });

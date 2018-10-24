@@ -17,15 +17,20 @@
     "type": "node-lib"
   },
   "dependencies": {
+    "@types/etag": "^1.8.0",
+    "@types/fresh": "^0.5.0",
     "@types/node": "^10.12.0",
-    "@types/superagent": "^3.8.4",
+    "@types/request-ip": "0.0.33",
+    "@types/serve-static": "^1.13.2",
     "etag": "^1.8.1",
     "fresh": "^0.5.2",
     "request-ip": "^2.1.1",
     "serve-static": "^1.13.2"
   },
   "devDependencies": {
-    "towerflow": "^1.1.1"
+    "@types/superagent": "^3.8.4",
+    "superagent": "^4.0.0-beta.5",
+    "towerflow": "^1.1.4"
   },
   "description": "Backend Server Framework of DeepDigest Inc.",
   "keywords": [
@@ -35,7 +40,7 @@
   ],
   "homepage": "https://www.deepdigest.com",
   "bugs": {
-    "url": "https://github.com/sevenryze/server-router/issue",
+    "url": "https://github.com/sevenryze/server-router/issues",
     "email": "sevenryze@gmail.com"
   },
   "license": "GPL-3.0",
