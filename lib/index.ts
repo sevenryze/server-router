@@ -147,22 +147,22 @@ export class Router {
     debug(`Get method: ${request.method} on url: ${request.url}`);
 
     // Protect the original URL from unintentional polluting.
-    requestAppend.originalUrl = request.url;
+    requestAppend.dd_originalUrl = request.url;
 
     // Store the url-related info.
-    requestAppend.parsedUrl = parse(request.url!, true);
-    requestAppend.queryString = requestAppend.parsedUrl.query;
+    requestAppend.dd_parsedUrl = parse(request.url!, true);
+    requestAppend.dd_queryString = requestAppend.dd_parsedUrl.query;
 
-    requestAppend.method = request.method;
-    requestAppend.headers = request.headers;
+    requestAppend.dd_method = request.method;
+    requestAppend.dd_headers = request.headers;
 
     // This taskList is the main ordered task list the current request matched.
     // Important!
-    requestAppend.taskList = [];
+    requestAppend.dd_taskList = [];
 
     // Point to each other.
-    requestAppend.response = response;
-    responseAppend.request = request;
+    requestAppend.dd_response = response;
+    responseAppend.dd_request = request;
 
     // Merge properties of our Request and Response prototypes
     // to the incoming request and response objects.
@@ -170,11 +170,11 @@ export class Router {
     Object.assign(response, responseAppend, responseProto);
 
     // Build the runList.
-    buildRunList(this, (request as unknown) as IRequest, ((request as unknown) as IRequest).taskList);
+    buildRunList(this, (request as unknown) as IRequest, ((request as unknown) as IRequest).dd_taskList);
 
     // Run the tasks.
     schedule(
-      ((request as unknown) as IRequest).taskList,
+      ((request as unknown) as IRequest).dd_taskList,
       (request as unknown) as IRequest,
       (response as unknown) as IResponse
     );

@@ -5,6 +5,9 @@ export interface ITask {
   (request: IRequest, response: IResponse, next: () => void): void;
 
   mountHttpMethod?: string;
+
+  // strimPath = requestPath - absolutePath
+  strimPath?: string;
 }
 
 // Should hidden underlaying node api from users.
@@ -13,39 +16,39 @@ export interface IRequest extends IRequestProto {
   /**
    * Original, unprocessed request URL
    */
-  readonly originalUrl: string;
+  readonly dd_originalUrl: string;
   /**
    * Parsed HTTP URL
    *
    * See: https://nodejs.org/dist/latest-v11.x/docs/api/url.html
    */
-  readonly parsedUrl: Url;
+  readonly dd_parsedUrl: Url;
   /**
    * Point to response object.
    */
-  readonly response: IResponse;
+  readonly dd_response: IResponse;
   /**
    * Request method
    */
-  readonly method: string;
+  readonly dd_method: string;
   /**
    * Http headers, stored by object format.
    *
    * Header names are lower-cased.
    */
-  readonly headers: IncomingMessage["headers"];
+  readonly dd_headers: IncomingMessage["headers"];
   /**
    * The tasks for this request, line by serially.
    *
    * Can be used for further monitor or optimise.
    */
-  readonly taskList: ITask[];
+  readonly dd_taskList: ITask[];
 
   /**
    * The app context variable for simply share state.
    * e.g. `request.share.something`
    */
-  share: {
+  dd_share: {
     [propName: string]: any;
   };
 }
@@ -54,7 +57,7 @@ export interface IResponse extends IResponseProto {
   /**
    * Point to request object.
    */
-  readonly request: IRequest;
+  readonly dd_request: IRequest;
 }
 
 export interface IRequestProto {

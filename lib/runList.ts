@@ -1,5 +1,8 @@
 import { Router } from ".";
+import { Debug } from "./helper/debugger";
 import { IRequest, ITask } from "./interface";
+
+const debug = Debug(__filename);
 
 /**
  * Build the task list which is used by schedule to actually run.
@@ -9,7 +12,7 @@ import { IRequest, ITask } from "./interface";
  * @param {ITask[]} runList - the pointer points to the runList array
  */
 export function buildRunList(router: Router, request: IRequest, runList: ITask[]) {
-  recurseBuildRunList(router, request.method.toLowerCase(), request.parsedUrl.pathname!, runList);
+  recurseBuildRunList(router, request.dd_method.toLowerCase(), request.dd_parsedUrl.pathname!, runList);
 }
 
 /**
@@ -31,12 +34,18 @@ function recurseBuildRunList(router: Router, requestMethod: string, requestPathn
       } else {
         // serialItem is a task function.
         const task = serialItem;
-        if (task.mountHttpMethod === "common") {
-          runList.push(task);
-        } else if (
-          requestPathname === router.absolutePath &&
-          (task.mountHttpMethod === requestMethod || task.mountHttpMethod === "all")
+
+        if (
+          task.mountHttpMethod === "common" ||
+          (requestPathname === router.absolutePath &&
+            (task.mountHttpMethod === requestMethod || task.mountHttpMethod === "all"))
         ) {
+          task.strimPath = requestPathname.substring(router.absolutePath === "/" ? 0 : router.absolutePath.length);
+
+          debug(
+            `strimPath: ${task.strimPath}, requestPathname: ${requestPathname}, absolutePath: ${router.absolutePath}`
+          );
+
           runList.push(task);
         }
       }

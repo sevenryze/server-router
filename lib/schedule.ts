@@ -1,3 +1,4 @@
+import { IncomingMessage } from "http";
 import { IRequest, IResponse, ITask } from "./interface";
 
 /**
@@ -17,7 +18,11 @@ export function schedule(runList: ITask[], request: IRequest, response: IRespons
   (function nextTask() {
     if (nextTaskIndex < runList.length) {
       process.nextTick(() => {
-        runList[nextTaskIndex++](request, response, nextTask);
+        const task = runList[nextTaskIndex++];
+
+        ((request as unknown) as IncomingMessage).url = task.strimPath;
+
+        task(request, response, nextTask);
       });
     }
   })();

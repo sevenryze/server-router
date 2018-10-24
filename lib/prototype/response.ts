@@ -49,7 +49,7 @@ export let responseProto: IResponseProto = {
 
     // skip body for HEAD request
     // skip empty body
-    if (!data || (this as IResponse).request.method === "HEAD") {
+    if (!data || (this as IResponse).dd_request.dd_method === "HEAD") {
       self.end();
       return this;
     }
@@ -108,7 +108,7 @@ export let responseProto: IResponseProto = {
     }
 
     // Check if the remote client cache is fresh.
-    const isFresh = fresh((this as IResponse).request.headers, ((this as unknown) as ServerResponse).getHeaders());
+    const isFresh = fresh((this as IResponse).dd_request.dd_headers, ((this as unknown) as ServerResponse).getHeaders());
     debug(`Check freshness: ${isFresh}`);
     if (isFresh) {
       self.statusCode = 304;

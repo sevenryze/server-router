@@ -11,25 +11,25 @@
 * [Big Picture, as I said](#big-picture-as-i-said)
 * [How to use](#how-to-use)
 * [API](#api)
-	* [`serveStatic`](#servestatic)
-	* [`Router()`](#router)
+* [`serveStatic`](#servestatic)
+* [`Router()`](#router)
 	* [`mount(path, router)`](#mountpath-router)
 	* [`METHOD(task)`](#methodtask)
 	* [Helpers on `Request`](#helpers-on-request)
-		* [`request.originalUrl`: string](#requestoriginalurl-string)
-		* [`request.parsedUrl`: Url](#requestparsedurl-url)
-		* [`request.queryString`: object](#requestquerystring-object)
-		* [`request.response`: Respond](#requestresponse-respond)
-		* [`request.method`: string](#requestmethod-string)
-		* [`request.headers`: object](#requestheaders-object)
-		* [`request.taskList`: Task[]](#requesttasklist-task)
-		* [`request.dd_getIp()`: () => string](#requestdd_getIp-string)
-		* [`request.tmp_*`: any](#requesttmp_-any)
+		* [`request.dd_originalUrl`: string](#requestdd_originalurl-string)
+		* [`request.dd_parsedUrl`: Url](#requestdd_parsedurl-url)
+		* [`request.dd_queryString`: object](#requestdd_querystring-object)
+		* [`request.dd_response`: Respond](#requestdd_response-respond)
+		* [`request.dd_method`: string](#requestdd_method-string)
+		* [`request.dd_headers`: object](#requestdd_headers-object)
+		* [`request.dd_taskList`: Task[]](#requestdd_tasklist-task)
+		* [`request.dd_getIp()`: () => string](#requestdd_getip-string)
+		* [`request.share`: {}](#requestshare)
 	* [Helpers on `Response`](#helpers-on-response)
-		* [`response.request`: Request](#responserequest-request)
-		* [`response.setHeader(object)`: (object) => Respond](#responsesetheaderobject-object-respond)
-		* [`response.setStatus(code)`: (code: number) => Response](#responsesetstatuscode-code-number-response)
-		* [`response.send(body)`: (body?) => Response](#responsesendbody-body-response)
+		* [`response.dd_request`: Request](#responsedd_request-request)
+		* [`response.dd_setHeader(object)`: (object) => Respond](#responsedd_setheaderobject-object-respond)
+		* [`response.dd_setStatus(code)`: (code: number) => Response](#responsedd_setstatuscode-code-number-response)
+		* [`response.dd_send(body)`: (body?) => Response](#responsedd_sendbody-body-response)
 	* [`listen(port)`](#listenport)
 	* [`close()`](#close)
 	* [`getListeningAddress()`](#getlisteningaddress)
@@ -112,12 +112,12 @@ let router = new Router();
 
 # API
 
-## `serveStatic`
+# `serveStatic`
 
 The static files serve utility shameless borrowed from node module `serve-static`.
 See more info: https://github.com/expressjs/serve-static
 
-## `Router()`
+# `Router()`
 
 `Router` class, used for initializing the router object.
 
@@ -175,31 +175,31 @@ router.get(async (request, response, next) => {
 
 ## Helpers on `Request`
 
-### `request.originalUrl`: string
+### `request.dd_originalUrl`: string
 
 Original, unprocessed request url.
 
-### `request.parsedUrl`: Url
+### `request.dd_parsedUrl`: Url
 
 The parsed http url, see https://nodejs.org/dist/latest-v9.x/docs/api/url.html#url_url_strings_and_url_objects for more info.
 
-### `request.queryString`: object
+### `request.dd_queryString`: object
 
 The query string key-value pairs parsed into object format.
 
-### `request.response`: Respond
+### `request.dd_response`: Respond
 
 Point to the accompanied Response object.
 
-### `request.method`: string
+### `request.dd_method`: string
 
 The request http method.
 
-### `request.headers`: object
+### `request.dd_headers`: object
 
 The http headers parsed into object format.
 
-### `request.taskList`: Task[]
+### `request.dd_taskList`: Task[]
 
 The tasks waiting for this request.
 
@@ -212,17 +212,17 @@ request.dd_getIp();
 // => "127.0.0.1"
 ```
 
-### `request.tmp_*`: any
+### `request.share`: {}
 
-The app context variable for simply share state between tasks. Must be the `tmp_*` format.
+The app context variable for simply share state between tasks.
 
 ## Helpers on `Response`
 
-### `response.request`: Request
+### `response.dd_request`: Request
 
 Points to the accompanied request object.
 
-### `response.setHeader(object)`: (object) => Respond
+### `response.dd_setHeader(object)`: (object) => Respond
 
 - object <string> - Object used to set the headers, such as { Accept: "text/plain", "X-API-Key": "dde" }.
 
@@ -231,18 +231,18 @@ Set header `key` to its `value`. If the `Content-Type` field is going to be set,
 Return the this object, aka. Respond to make chain-able calls available.
 
 ```js
-response.setHeader({ Accept: "text/plain", "X-API-Key": "xmt" });
+response.dd_setHeader({ Accept: "text/plain", "X-API-Key": "xmt" });
 // => Accept: "text/plain"
 // => X-API-Key: "xmt"
-response.setHeader({ "Content-Type": "json" });
+response.dd_setHeader({ "Content-Type": "json" });
 // => Content-Type: "application/json; charset=utf-8"
-response.setHeader({ "Content-Type": "html" });
+response.dd_setHeader({ "Content-Type": "html" });
 // => Content-Type: "text/html; charset=utf-8"
-response.setHeader({ "Content-Type": "bin" });
+response.dd_setHeader({ "Content-Type": "bin" });
 // => Content-Type: "application/octet-stream"
 ```
 
-### `response.setStatus(code)`: (code: number) => Response
+### `response.dd_setStatus(code)`: (code: number) => Response
 
 - code <number> - Http status code number such as "404"
 
@@ -254,7 +254,7 @@ Return this object for chain-able calls.
 response.setStatus(404);
 ```
 
-### `response.send(body)`: (body?) => Response
+### `response.dd_send(body)`: (body?) => Response
 
 - body <string | object | buffer> - Can be a string such as `"some string"`, an object such as `{some: "haha"}` and a buffer such as `new Buffer("some buffer")`.
 
