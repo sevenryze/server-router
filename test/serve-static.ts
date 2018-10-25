@@ -10,7 +10,7 @@ describe("serveStatic", () => {
     router.common(serveStatic(__dirname + "/asset"));
     router.common((_, res) => {
       console.log(`Nothing matched`);
-      res.dd_send();
+      res. de_send();
     });
 
     await router.listen(0);
@@ -97,7 +97,7 @@ describe("serveStatic", () => {
     staticFiles.common(serveStatic(__dirname + "/asset"));
     root.common((_, res) => {
       console.log(`Nothing matched`);
-      res.dd_send();
+      res. de_send();
     });
 
     await root.listen(0);

@@ -1,5 +1,7 @@
+import { Url } from "url";
 import { Router } from ".";
 import { Debug } from "./helper/debugger";
+import { strimPath } from "./helper/strim-path";
 import { IRequest, ITask } from "./interface";
 
 const debug = Debug(__filename);
@@ -12,7 +14,7 @@ const debug = Debug(__filename);
  * @param {ITask[]} runList - the pointer points to the runList array
  */
 export function buildRunList(router: Router, request: IRequest, runList: ITask[]) {
-  recurseBuildRunList(router, request.dd_method.toLowerCase(), request.dd_parsedUrl.pathname!, runList);
+  recurseBuildRunList(router, request.de_method.toLowerCase(), request.de_parsedUrl, runList);
 }
 
 /**
@@ -20,33 +22,40 @@ export function buildRunList(router: Router, request: IRequest, runList: ITask[]
  * Maybe we shouldn't use this method cause of intrinsic unsafe memory use.
  *
  * @param {Router} router - the matching router
- * @param {string} requestMethod - the http request method
- * @param {string} requestPathname - the matching pathname
+ * @param {string} method - the http request method
+ * @param {string} pathname - the http pathname
  * @param {ITask[]} runList - the pointer points to the runList array
  */
-function recurseBuildRunList(router: Router, requestMethod: string, requestPathname: string, runList: ITask[]): void {
+function recurseBuildRunList(router: Router, method: string, parsedUrl: Url, runList: ITask[]): void {
   const matchPath = router.absolutePath;
-  if (requestPathname.substring(0, matchPath.length) === matchPath) {
+  const pathname = parsedUrl.pathname;
+
+  if (!pathname) {
+    return;
+  }
+
+  if (pathname.substring(0, matchPath.length) === matchPath) {
     for (const serialItem of router.serialList) {
       // serialItem is a Router.
       if (serialItem instanceof Router) {
-        recurseBuildRunList(serialItem, requestMethod, requestPathname, runList);
-      } else {
-        // serialItem is a task function.
-        const task = serialItem;
+        const routerItem = serialItem;
+
+        recurseBuildRunList(routerItem, method, parsedUrl, runList);
+      }
+      // serialItem is a task function.
+      else {
+        const taskItem = serialItem;
 
         if (
-          task.mountHttpMethod === "common" ||
-          (requestPathname === router.absolutePath &&
-            (task.mountHttpMethod === requestMethod || task.mountHttpMethod === "all"))
+          taskItem.mountHttpMethod === "common" ||
+          (pathname === router.absolutePath &&
+            (taskItem.mountHttpMethod === method || taskItem.mountHttpMethod === "all"))
         ) {
-          task.strimPath = requestPathname.substring(router.absolutePath === "/" ? 0 : router.absolutePath.length);
+          taskItem.strimPath = strimPath(parsedUrl, router.absolutePath);
 
-          debug(
-            `strimPath: ${task.strimPath}, requestPathname: ${requestPathname}, absolutePath: ${router.absolutePath}`
-          );
+          debug(`strimPath: ${taskItem.strimPath}, absolutePath: ${router.absolutePath}`);
 
-          runList.push(task);
+          runList.push(taskItem);
         }
       }
     }

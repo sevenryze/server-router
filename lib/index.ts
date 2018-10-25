@@ -20,7 +20,14 @@ export class Router {
   public serialList: Array<ITask | Router> = [];
 
   public mountPath: string = "";
-  public absolutePath: string = ""; // Will not be decided until the final entry() be called.
+
+  /**
+   * This path is used by matching tasks.
+   *
+   * Will not be decided until the entry router's listen() got called.
+   */
+  public absolutePath: string = "";
+
   public mount = (path: string, router: Router): void => {
     if (
       typeof path !== "string" ||
@@ -31,9 +38,11 @@ export class Router {
     ) {
       throw new RouterError("Router.mount() requires non-'/', '/'-begin and non-end-'/' path");
     }
+
     if (!(router instanceof Router)) {
       throw new RouterError("Router.mount() requires a Router");
     }
+
     for (const storedItem of this.serialList) {
       if (storedItem instanceof Router) {
         if (path === (storedItem as Router).mountPath) {
@@ -45,6 +54,7 @@ export class Router {
     router.mountPath = path;
     this.serialList.push(router);
   };
+
   public all = (task: ITask): void => {
     this.addTask("all", task);
   };
@@ -63,9 +73,10 @@ export class Router {
   public common = (task: ITask): void => {
     this.addTask("common", task);
   };
+
   public listen = (port: number): Promise<this> => {
     if (typeof port !== "number") {
-      throw new RouterError("Router.listen() requires a number port");
+      throw new RouterError("Router.listen() requires a number type port");
     }
 
     // Set the current router to root router.
@@ -114,20 +125,22 @@ export class Router {
     taskItem.mountHttpMethod = httpMethod;
     this.serialList.push(taskItem);
   };
-  private recurseSetAbsolutePath = (absolutePathPrefix: string): void => {
+
+  private recurseSetAbsolutePath = (prefix: string): void => {
     Router.recurseSetAbsolutePathCounter++;
 
     // The current node is a root node.
-    if (absolutePathPrefix === "root") {
+    if (prefix === "root") {
       this.absolutePath = "/";
       this.mountPath = "root";
     } else {
       // The current node is a first layer node mounted on root node directly.
-      if (absolutePathPrefix === "/") {
+      if (prefix === "/") {
         this.absolutePath = this.mountPath;
-      } else {
-        // The current node is a normal node.
-        this.absolutePath = absolutePathPrefix + this.mountPath;
+      }
+      // The current node is a normal node.
+      else {
+        this.absolutePath = prefix + this.mountPath;
       }
     }
 
@@ -147,22 +160,22 @@ export class Router {
     debug(`Get method: ${request.method} on url: ${request.url}`);
 
     // Protect the original URL from unintentional polluting.
-    requestAppend.dd_originalUrl = request.url;
+    requestAppend. de_originalUrl = request.url;
 
     // Store the url-related info.
-    requestAppend.dd_parsedUrl = parse(request.url!, true);
-    requestAppend.dd_queryString = requestAppend.dd_parsedUrl.query;
+    requestAppend. de_parsedUrl = parse(request.url!, true);
+    requestAppend. de_queryString = requestAppend. de_parsedUrl.query;
 
-    requestAppend.dd_method = request.method;
-    requestAppend.dd_headers = request.headers;
+    requestAppend. de_method = request.method;
+    requestAppend. de_headers = request.headers;
 
     // This taskList is the main ordered task list the current request matched.
     // Important!
-    requestAppend.dd_taskList = [];
+    requestAppend. de_taskList = [];
 
     // Point to each other.
-    requestAppend.dd_response = response;
-    responseAppend.dd_request = request;
+    requestAppend. de_response = response;
+    responseAppend. de_request = request;
 
     // Merge properties of our Request and Response prototypes
     // to the incoming request and response objects.
@@ -170,11 +183,11 @@ export class Router {
     Object.assign(response, responseAppend, responseProto);
 
     // Build the runList.
-    buildRunList(this, (request as unknown) as IRequest, ((request as unknown) as IRequest).dd_taskList);
+    buildRunList(this, (request as unknown) as IRequest, ((request as unknown) as IRequest). de_taskList);
 
     // Run the tasks.
     schedule(
-      ((request as unknown) as IRequest).dd_taskList,
+      ((request as unknown) as IRequest). de_taskList,
       (request as unknown) as IRequest,
       (response as unknown) as IResponse
     );

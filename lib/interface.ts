@@ -16,39 +16,39 @@ export interface IRequest extends IRequestProto {
   /**
    * Original, unprocessed request URL
    */
-  readonly dd_originalUrl: string;
+  readonly  de_originalUrl: string;
   /**
    * Parsed HTTP URL
    *
    * See: https://nodejs.org/dist/latest-v11.x/docs/api/url.html
    */
-  readonly dd_parsedUrl: Url;
+  readonly  de_parsedUrl: Url;
   /**
    * Point to response object.
    */
-  readonly dd_response: IResponse;
+  readonly  de_response: IResponse;
   /**
    * Request method
    */
-  readonly dd_method: string;
+  readonly  de_method: string;
   /**
    * Http headers, stored by object format.
    *
    * Header names are lower-cased.
    */
-  readonly dd_headers: IncomingMessage["headers"];
+  readonly  de_headers: IncomingMessage["headers"];
   /**
    * The tasks for this request, line by serially.
    *
    * Can be used for further monitor or optimise.
    */
-  readonly dd_taskList: ITask[];
+  readonly  de_taskList: ITask[];
 
   /**
    * The app context variable for simply share state.
    * e.g. `request.share.something`
    */
-  dd_share: {
+   de_share: {
     [propName: string]: any;
   };
 }
@@ -57,7 +57,7 @@ export interface IResponse extends IResponseProto {
   /**
    * Point to request object.
    */
-  readonly dd_request: IRequest;
+  readonly  de_request: IRequest;
 }
 
 export interface IRequestProto {
@@ -66,13 +66,13 @@ export interface IRequestProto {
    *
    * Examples:
    * ```
-   *  request.dd_getIp();
+   *  request. de_getIp();
    *  // => "127.0.0.1"
    * ```
    * Notes:
    *  The function could be able to handle the proxy situation.
    */
-  dd_getIp: () => string;
+   de_getIp: () => string;
 }
 
 export interface IResponseProto {
@@ -102,7 +102,7 @@ export interface IResponseProto {
    * @param object Object used to set the headers, such as { Accept: "text/plain", "X-API-Key": "xmt" }.
    * @returns Return this `response` object for chain-able.
    */
-  dd_setHeader: (
+   de_setHeader: (
     object: {
       [i: string]: any;
     }
@@ -118,7 +118,7 @@ export interface IResponseProto {
    * @param code Status code number such as "404".
    * @returns Return this `response` object for chain-able.
    */
-  dd_setStatus: (code: number) => this;
+   de_setStatus: (code: number) => this;
 
   /**
    * Send a response to the remote client, and
@@ -137,5 +137,5 @@ export interface IResponseProto {
    *  1. A buffer - `new Buffer{"some buffer"}`.
    * @returns Return this `response` object for chain-able.
    */
-  dd_send: (data?: string | Buffer | object) => this;
+   de_send: (data?: string | Buffer | object) => this;
 }

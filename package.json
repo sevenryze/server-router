@@ -1,6 +1,6 @@
 {
   "name": "@sevenryze/server-router",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "dist/lib/index.js",
   "files": [
     "dist/",
@@ -40,7 +40,7 @@
     "Server Router",
     "Framework"
   ],
-  "homepage": "https://www.deepdigest.com",
+  "homepage": "https://github.com/sevenryze/server-router",
   "bugs": {
     "url": "https://github.com/sevenryze/server-router/issues",
     "email": "sevenryze@gmail.com"

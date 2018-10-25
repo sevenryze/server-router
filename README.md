@@ -16,20 +16,20 @@
 	* [`mount(path, router)`](#mountpath-router)
 	* [`METHOD(task)`](#methodtask)
 	* [Helpers on `Request`](#helpers-on-request)
-		* [`request.dd_originalUrl`: string](#requestdd_originalurl-string)
-		* [`request.dd_parsedUrl`: Url](#requestdd_parsedurl-url)
-		* [`request.dd_queryString`: object](#requestdd_querystring-object)
-		* [`request.dd_response`: Respond](#requestdd_response-respond)
-		* [`request.dd_method`: string](#requestdd_method-string)
-		* [`request.dd_headers`: object](#requestdd_headers-object)
-		* [`request.dd_taskList`: Task[]](#requestdd_tasklist-task)
-		* [`request.dd_getIp()`: () => string](#requestdd_getip-string)
+		* [`request. de_originalUrl`: string](#request-de_originalurl-string)
+		* [`request. de_parsedUrl`: Url](#request-de_parsedurl-url)
+		* [`request. de_queryString`: object](#request-de_querystring-object)
+		* [`request. de_response`: Respond](#request-de_response-respond)
+		* [`request. de_method`: string](#request-de_method-string)
+		* [`request. de_headers`: object](#request-de_headers-object)
+		* [`request. de_taskList`: Task[]](#request-de_tasklist-task)
+		* [`request. de_getIp()`: () => string](#request-de_getip-string)
 		* [`request.share`: {}](#requestshare)
 	* [Helpers on `Response`](#helpers-on-response)
-		* [`response.dd_request`: Request](#responsedd_request-request)
-		* [`response.dd_setHeader(object)`: (object) => Respond](#responsedd_setheaderobject-object-respond)
-		* [`response.dd_setStatus(code)`: (code: number) => Response](#responsedd_setstatuscode-code-number-response)
-		* [`response.dd_send(body)`: (body?) => Response](#responsedd_sendbody-body-response)
+		* [`response. de_request`: Request](#response-de_request-request)
+		* [`response. de_setHeader(object)`: (object) => Respond](#response-de_setheaderobject-object-respond)
+		* [`response. de_setStatus(code)`: (code: number) => Response](#response-de_setstatuscode-code-number-response)
+		* [`response. de_send(body)`: (body?) => Response](#response-de_sendbody-body-response)
 	* [`listen(port)`](#listenport)
 	* [`close()`](#close)
 	* [`getListeningAddress()`](#getlisteningaddress)
@@ -65,7 +65,7 @@ Good luck for this project!
 
 # Big Picture, as I said
 
-The HTTP Request - by the simple view point - is consist of below parts:
+An Incoming HTTP Request - by the simple view point - is consist of below parts:
 
 1.  HTTP method: GET, PUT, POST or DELETE.
 2.  HTTP path: /api/v1/hello?foo=bar&a=b
@@ -87,7 +87,7 @@ We think, for app logic developers, the first two parts shall fully qualify a ht
 
 The tasks can make different process in terms of the `Request` object passed into, or call the `next()` function to pass the control to next matching tasks, exactly as the `express` framework.🤡
 
-For brevity, whole system consists of routers, and single router consists of matching **`path`**, **`method`** and **`tasks`**.
+For brevity, whole system consists of routers, and single router consists of **`matching path`**, **`method`** and **`tasks`**.
 
 The most important claim, **_DO NOT_** resort the skip-level mounting, in which you mount the non direct descendant. Think like this:
 
@@ -96,7 +96,7 @@ The most important claim, **_DO NOT_** resort the skip-level mounting, in which 
 router.mount("/api/v1, router_v1");
 ```
 
-For specific http request, system will give us an integrated **`TPT`**. And this **`TPT`** will be the key for future performance monitor, optimization and task testing.
+For a specific http request, system will give you an integrated **`TPT`**. And this **`TPT`** will be the key for future performance monitor, optimization and task testing.
 
 # How to use
 
@@ -175,40 +175,40 @@ router.get(async (request, response, next) => {
 
 ## Helpers on `Request`
 
-### `request.dd_originalUrl`: string
+### `request. de_originalUrl`: string
 
 Original, unprocessed request url.
 
-### `request.dd_parsedUrl`: Url
+### `request. de_parsedUrl`: Url
 
 The parsed http url, see https://nodejs.org/dist/latest-v9.x/docs/api/url.html#url_url_strings_and_url_objects for more info.
 
-### `request.dd_queryString`: object
+### `request. de_queryString`: object
 
 The query string key-value pairs parsed into object format.
 
-### `request.dd_response`: Respond
+### `request. de_response`: Respond
 
 Point to the accompanied Response object.
 
-### `request.dd_method`: string
+### `request. de_method`: string
 
 The request http method.
 
-### `request.dd_headers`: object
+### `request. de_headers`: object
 
 The http headers parsed into object format.
 
-### `request.dd_taskList`: Task[]
+### `request. de_taskList`: Task[]
 
 The tasks waiting for this request.
 
-### `request.dd_getIp()`: () => string
+### `request. de_getIp()`: () => string
 
 Get the client ip and be able to handle behind proxy case.
 
 ```js
-request.dd_getIp();
+request.de_getIp();
 // => "127.0.0.1"
 ```
 
@@ -218,11 +218,11 @@ The app context variable for simply share state between tasks.
 
 ## Helpers on `Response`
 
-### `response.dd_request`: Request
+### `response. de_request`: Request
 
 Points to the accompanied request object.
 
-### `response.dd_setHeader(object)`: (object) => Respond
+### `response. de_setHeader(object)`: (object) => Respond
 
 - object <string> - Object used to set the headers, such as { Accept: "text/plain", "X-API-Key": "dde" }.
 
@@ -231,18 +231,18 @@ Set header `key` to its `value`. If the `Content-Type` field is going to be set,
 Return the this object, aka. Respond to make chain-able calls available.
 
 ```js
-response.dd_setHeader({ Accept: "text/plain", "X-API-Key": "xmt" });
+response.de_setHeader({ Accept: "text/plain", "X-API-Key": "xmt" });
 // => Accept: "text/plain"
 // => X-API-Key: "xmt"
-response.dd_setHeader({ "Content-Type": "json" });
+response.de_setHeader({ "Content-Type": "json" });
 // => Content-Type: "application/json; charset=utf-8"
-response.dd_setHeader({ "Content-Type": "html" });
+response.de_setHeader({ "Content-Type": "html" });
 // => Content-Type: "text/html; charset=utf-8"
-response.dd_setHeader({ "Content-Type": "bin" });
+response.de_setHeader({ "Content-Type": "bin" });
 // => Content-Type: "application/octet-stream"
 ```
 
-### `response.dd_setStatus(code)`: (code: number) => Response
+### `response. de_setStatus(code)`: (code: number) => Response
 
 - code <number> - Http status code number such as "404"
 
@@ -254,7 +254,7 @@ Return this object for chain-able calls.
 response.setStatus(404);
 ```
 
-### `response.dd_send(body)`: (body?) => Response
+### `response. de_send(body)`: (body?) => Response
 
 - body <string | object | buffer> - Can be a string such as `"some string"`, an object such as `{some: "haha"}` and a buffer such as `new Buffer("some buffer")`.
 

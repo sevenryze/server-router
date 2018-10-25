@@ -7,7 +7,7 @@ import { IResponse, IResponseProto } from "../interface";
 const debug = Debug(__filename);
 
 export let responseProto: IResponseProto = {
-  dd_setHeader(keyValuePair) {
+   de_setHeader(keyValuePair) {
     for (const key of Object.keys(keyValuePair)) {
       let value = keyValuePair[key];
 
@@ -34,12 +34,12 @@ export let responseProto: IResponseProto = {
     return this;
   },
 
-  dd_setStatus(code) {
+   de_setStatus(code) {
     ((this as unknown) as ServerResponse).statusCode = code;
     return this;
   },
 
-  dd_send(data) {
+   de_send(data) {
     const self = (this as unknown) as ServerResponse;
 
     // Allow for multi call.
@@ -49,7 +49,7 @@ export let responseProto: IResponseProto = {
 
     // skip body for HEAD request
     // skip empty body
-    if (!data || (this as IResponse).dd_request.dd_method === "HEAD") {
+    if (!data || (this as IResponse). de_request. de_method === "HEAD") {
       self.end();
       return this;
     }
@@ -63,7 +63,7 @@ export let responseProto: IResponseProto = {
       case "string":
         // in case have not set `Content-Type`.
         if (!contentType) {
-          this.dd_setHeader({ "Content-Type": "text" });
+          this. de_setHeader({ "Content-Type": "text" });
         }
         break;
 
@@ -72,12 +72,12 @@ export let responseProto: IResponseProto = {
         // In case a Buffer here.
         if (Buffer.isBuffer(data)) {
           if (!contentType) {
-            this.dd_setHeader({ "Content-Type": "bin" });
+            this. de_setHeader({ "Content-Type": "bin" });
           }
         } else {
           // Must be an Array or Object.
           if (!contentType) {
-            this.dd_setHeader({ "Content-Type": "json" });
+            this. de_setHeader({ "Content-Type": "json" });
           }
 
           try {
@@ -96,19 +96,19 @@ export let responseProto: IResponseProto = {
       }
 
       length = (data as Buffer).length;
-      this.dd_setHeader({ "Content-Length": length });
+      this. de_setHeader({ "Content-Length": length });
     }
 
     // Populate ETag.
     if (length && !self.getHeader("etag")) {
       const generatedEtag = etag(data as Buffer, { weak: true });
       if (generatedEtag) {
-        this.dd_setHeader({ ETag: generatedEtag });
+        this. de_setHeader({ ETag: generatedEtag });
       }
     }
 
     // Check if the remote client cache is fresh.
-    const isFresh = fresh((this as IResponse).dd_request.dd_headers, ((this as unknown) as ServerResponse).getHeaders());
+    const isFresh = fresh((this as IResponse). de_request. de_headers, ((this as unknown) as ServerResponse).getHeaders());
     debug(`Check freshness: ${isFresh}`);
     if (isFresh) {
       self.statusCode = 304;
