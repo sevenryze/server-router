@@ -9,7 +9,7 @@
   "scripts": {
     "start": "towerflow start",
     "production": "towerflow production",
-    "test": "towerflow test --env=jsdom",
+    "test": "towerflow test --env=node",
     "generate-config": "towerflow assistant --generate-config",
     "remove-config": "towerflow assistant --remove-config"
   },
