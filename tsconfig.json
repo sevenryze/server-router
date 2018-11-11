@@ -12,7 +12,12 @@
     "removeComments": true,
     "strict": true,
     "alwaysStrict": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "plugins": [
+      {
+        "name": "typescript-tslint-plugin"
+      }
+    ]
   },
   "include": ["lib", "typings"]
 }

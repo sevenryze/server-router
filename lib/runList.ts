@@ -9,9 +9,9 @@ const debug = Debug(__filename);
 /**
  * Build the task list which is used by schedule to actually run.
  *
- * @param {Router} router - the matching router
- * @param {IRequest} request - the incoming request
- * @param {ITask[]} runList - the pointer points to the runList array
+ * @param router - the matching router
+ * @param request - the incoming request
+ * @param runList - the pointer points to the runList array
  */
 export function buildRunList(router: Router, request: IRequest, runList: ITask[]) {
   recurseBuildRunList(router, request.de_method.toLowerCase(), request.de_parsedUrl, runList);
@@ -21,10 +21,10 @@ export function buildRunList(router: Router, request: IRequest, runList: ITask[]
  * Build the run list with recurse method.
  * Maybe we shouldn't use this method cause of intrinsic unsafe memory use.
  *
- * @param {Router} router - the matching router
- * @param {string} method - the http request method
- * @param {string} pathname - the http pathname
- * @param {ITask[]} runList - the pointer points to the runList array
+ * @param router - the matching router
+ * @param method - the http request method
+ * @param pathname - the http pathname
+ * @param runList - the pointer points to the runList array
  */
 function recurseBuildRunList(router: Router, method: string, parsedUrl: Url, runList: ITask[]): void {
   const matchPath = router.absolutePath;
