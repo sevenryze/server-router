@@ -12,6 +12,10 @@ import { schedule } from "./schedule";
 
 const debug = Debug(__filename);
 
+export type IRequest = IRequest;
+export type IResponse = IResponse;
+export type ITask = ITask;
+
 export function serveStatic(root: string, options?: staticServe.ServeStaticOptions) {
   return (staticServe(root, options) as unknown) as ITask;
 }
@@ -160,22 +164,22 @@ export class Router {
     debug(`Get method: ${request.method} on url: ${request.url}`);
 
     // Protect the original URL from unintentional polluting.
-    requestAppend. de_originalUrl = request.url;
+    requestAppend.de_originalUrl = request.url;
 
     // Store the url-related info.
-    requestAppend. de_parsedUrl = parse(request.url!, true);
-    requestAppend. de_queryString = requestAppend. de_parsedUrl.query;
+    requestAppend.de_parsedUrl = parse(request.url!, true);
+    requestAppend.de_queryString = requestAppend.de_parsedUrl.query;
 
-    requestAppend. de_method = request.method;
-    requestAppend. de_headers = request.headers;
+    requestAppend.de_method = request.method;
+    requestAppend.de_headers = request.headers;
 
     // This taskList is the main ordered task list the current request matched.
     // Important!
-    requestAppend. de_taskList = [];
+    requestAppend.de_taskList = [];
 
     // Point to each other.
-    requestAppend. de_response = response;
-    responseAppend. de_request = request;
+    requestAppend.de_response = response;
+    responseAppend.de_request = request;
 
     // Merge properties of our Request and Response prototypes
     // to the incoming request and response objects.
@@ -183,11 +187,11 @@ export class Router {
     Object.assign(response, responseAppend, responseProto);
 
     // Build the runList.
-    buildRunList(this, (request as unknown) as IRequest, ((request as unknown) as IRequest). de_taskList);
+    buildRunList(this, (request as unknown) as IRequest, ((request as unknown) as IRequest).de_taskList);
 
     // Run the tasks.
     schedule(
-      ((request as unknown) as IRequest). de_taskList,
+      ((request as unknown) as IRequest).de_taskList,
       (request as unknown) as IRequest,
       (response as unknown) as IResponse
     );
