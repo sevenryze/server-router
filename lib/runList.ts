@@ -1,8 +1,8 @@
 import { Url } from "url";
-import { Router } from ".";
+import { ITask, Router } from ".";
 import { Debug } from "./helper/debugger";
 import { strimPath } from "./helper/strim-path";
-import { IRequest, ITask } from "./interface";
+import { Request } from "./prototype/request";
 
 const debug = Debug(__filename);
 
@@ -13,8 +13,8 @@ const debug = Debug(__filename);
  * @param request - the incoming request
  * @param runList - the pointer points to the runList array
  */
-export function buildRunList(router: Router, request: IRequest, runList: ITask[]) {
-  recurseBuildRunList(router, request.de_method.toLowerCase(), request.de_parsedUrl, runList);
+export function buildRunList(router: Router, request: Request, runList: ITask[]) {
+  recurseBuildRunList(router, request.method.toLowerCase(), request.parsedUrl, runList);
 }
 
 /**
@@ -39,6 +39,8 @@ function recurseBuildRunList(router: Router, method: string, parsedUrl: Url, run
       // serialItem is a Router.
       if (serialItem instanceof Router) {
         const routerItem = serialItem;
+
+        debug(`Get a mounted router, recursively build run list`);
 
         recurseBuildRunList(routerItem, method, parsedUrl, runList);
       }

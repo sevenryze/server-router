@@ -10,7 +10,7 @@ describe("serveStatic", () => {
     router.common(serveStatic(__dirname + "/asset"));
     router.common((_, res) => {
       console.log(`Nothing matched`);
-      res. de_send();
+      res.send();
     });
 
     await router.listen(0);
@@ -25,7 +25,7 @@ describe("serveStatic", () => {
 
   test("Should send file to client", async () => {
     const textData = readFileSync(__dirname + "/asset/test.txt", {
-      encoding: "utf8"
+      encoding: "utf8",
     });
 
     const router = new Router();
@@ -46,7 +46,7 @@ describe("serveStatic", () => {
     const router = new Router();
 
     const textData = readFileSync(__dirname + "/asset/test.txt", {
-      encoding: "utf8"
+      encoding: "utf8",
     });
 
     router.common(serveStatic(__dirname + "/asset/folder1"));
@@ -66,7 +66,7 @@ describe("serveStatic", () => {
     const router = new Router();
 
     const textData = readFileSync(__dirname + "/asset/test.txt", {
-      encoding: "utf8"
+      encoding: "utf8",
     });
 
     router.common(serveStatic(__dirname + "/asset"));
@@ -90,14 +90,14 @@ describe("serveStatic", () => {
     const staticFiles = new Router();
 
     const textData = readFileSync(__dirname + "/asset/test.txt", {
-      encoding: "utf8"
+      encoding: "utf8",
     });
 
     root.mount("/static", staticFiles);
     staticFiles.common(serveStatic(__dirname + "/asset"));
     root.common((_, res) => {
       console.log(`Nothing matched`);
-      res. de_send();
+      res.send();
     });
 
     await root.listen(0);

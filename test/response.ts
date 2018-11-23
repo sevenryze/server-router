@@ -7,8 +7,8 @@ describe("Response", () => {
     test("should sent json", async () => {
       const router = new Router();
       router.common((req, res) => {
-        res. de_send({
-          json: "hello!"
+        res.send({
+          json: "hello!",
         });
       });
 
@@ -27,7 +27,7 @@ describe("Response", () => {
     test("should sent text", async () => {
       const router = new Router();
       router.common((req, res) => {
-        res. de_send("hello text!");
+        res.send("hello text!");
       });
 
       await router.listen(0);
@@ -44,7 +44,7 @@ describe("Response", () => {
     test("should sent binary data", async () => {
       const router = new Router();
       router.common((req, res) => {
-        res. de_send(Buffer.from("sevenryze"));
+        res.send(Buffer.from("sevenryze"));
       });
       await router.listen(0);
       const address = router.getListeningAddress();
@@ -59,8 +59,8 @@ describe("Response", () => {
     test("should sent html", async () => {
       const router = new Router();
       router.common((_, res) => {
-        res. de_setHeader({ "content-type": "html" });
-        res. de_send("<p>hello</p>");
+        res.setHeader({ "content-type": "html" });
+        res.send("<p>hello</p>");
       });
       await router.listen(0);
       const address = router.getListeningAddress();
@@ -75,14 +75,14 @@ describe("Response", () => {
     test("should allow call this method multi times", async () => {
       const router = new Router();
       router.common((_, res) => {
-        res. de_send({
-          json: "hello 1!"
+        res.send({
+          json: "hello 1!",
         });
-        res. de_send({
-          json: "hello 2!"
+        res.send({
+          json: "hello 2!",
         });
-        res. de_send({
-          json: "hello 3!"
+        res.send({
+          json: "hello 3!",
         });
       });
       await router.listen(0);
@@ -97,15 +97,15 @@ describe("Response", () => {
     });
   });
 
-  describe(" de_setHeader", () => {
+  describe(" setHeader", () => {
     test("should set the response headers", async () => {
       const router = new Router();
       router.common((_, res) => {
-        res. de_setHeader({
+        res.setHeader({
           "set-cookie": 123,
-          "x-powered-by": "XmT"
+          "x-powered-by": "XmT",
         });
-        res. de_send();
+        res.send();
       });
       await router.listen(0);
       const address = router.getListeningAddress();
@@ -122,11 +122,11 @@ describe("Response", () => {
     test("should set content-type to `application/json; charset=utf-8` when send `json`", async () => {
       const router = new Router();
       router.common((_, res) => {
-        res. de_setHeader({
+        res.setHeader({
           "content-type": "json",
-          "x-powered-by": "XmT"
+          "x-powered-by": "XmT",
         });
-        res. de_send();
+        res.send();
       });
       await router.listen(0);
       const address = router.getListeningAddress();
@@ -142,10 +142,10 @@ describe("Response", () => {
     test("should set content-type to `text/html; charset=utf-8` when send `html`", async () => {
       const router = new Router();
       router.common((req, res) => {
-        res. de_setHeader({
-          "content-type": "html"
+        res.setHeader({
+          "content-type": "html",
         });
-        res. de_send();
+        res.send();
       });
       await router.listen(0);
       const address = router.getListeningAddress();
@@ -161,10 +161,10 @@ describe("Response", () => {
     test("should set content-type to `text/plain; charset=utf-8` when send `text`", async () => {
       const router = new Router();
       router.common((_, res) => {
-        res. de_setHeader({
-          "content-type": "text"
+        res.setHeader({
+          "content-type": "text",
         });
-        res. de_send();
+        res.send();
       });
       await router.listen(0);
       const address = router.getListeningAddress();
@@ -180,10 +180,10 @@ describe("Response", () => {
     test("should set content-type to `application/octet-stream` when send `bin`", async () => {
       const router = new Router();
       router.common((req, res) => {
-        res. de_setHeader({
-          "content-type": "bin"
+        res.setHeader({
+          "content-type": "bin",
         });
-        res. de_send();
+        res.send();
       });
       await router.listen(0);
       const address = router.getListeningAddress();
@@ -201,7 +201,7 @@ describe("Response", () => {
     test("should set the response status code", async () => {
       const router = new Router();
       router.common((req, res) => {
-        res. de_setStatus(717). de_send();
+        res.setStatus(717).send();
       });
       await router.listen(0);
 

@@ -19,7 +19,7 @@ describe("Router", () => {
     router.common((request, response) => {
       array.push(3);
       expect(array).toEqual([1, 2, 3]);
-      response. de_send();
+      response.send();
     });
 
     await router.listen(0);

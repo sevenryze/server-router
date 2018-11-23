@@ -1,23 +1,35 @@
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
 import { AddressInfo } from "net";
 import staticServe from "serve-static";
-import { parse } from "url";
 import { Debug } from "./helper/debugger";
 import { RouterError } from "./helper/router-error";
-import { IRequest, IResponse, ITask } from "./interface";
-import { requestProto } from "./prototype/request";
-import { responseProto } from "./prototype/response";
+import { Request } from "./prototype/request";
+import { Response } from "./prototype/response";
 import { buildRunList } from "./runList";
 import { schedule } from "./schedule";
 
 const debug = Debug(__filename);
 
-export type IRequest = IRequest;
-export type IResponse = IResponse;
-export type ITask = ITask;
+export type Request = Request;
+export type Response = Response;
 
-export function serveStatic(root: string, options?: staticServe.ServeStaticOptions) {
-  return (staticServe(root, options) as unknown) as ITask;
+export interface ITask {
+  (request: Request, response: Response, next: () => void): void;
+
+  mountHttpMethod?: string;
+
+  // strimPath = requestPath - absolutePath
+  strimPath?: string;
+}
+
+export function serveStatic(root: string, options?: staticServe.ServeStaticOptions): ITask {
+  const middleware = staticServe(root, options);
+
+  return (request, response, next) => {
+    request.innerRequest.url = request.trimmedUrl;
+
+    middleware(request.innerRequest as any, response.innerResponse as any, next);
+  };
 }
 
 export class Router {
@@ -158,42 +170,17 @@ export class Router {
 
   // This is actual handler of the incoming message.
   private incomingRequestHandler = (request: IncomingMessage, response: ServerResponse): void => {
-    const requestAppend: any = {};
-    const responseAppend: any = {};
-
     debug(`Get method: ${request.method} on url: ${request.url}`);
 
-    // Protect the original URL from unintentional polluting.
-    requestAppend.de_originalUrl = request.url;
-
-    // Store the url-related info.
-    requestAppend.de_parsedUrl = parse(request.url!, true);
-    requestAppend.de_queryString = requestAppend.de_parsedUrl.query;
-
-    requestAppend.de_method = request.method;
-    requestAppend.de_headers = request.headers;
-
-    // This taskList is the main ordered task list the current request matched.
-    // Important!
-    requestAppend.de_taskList = [];
-
-    // Point to each other.
-    requestAppend.de_response = response;
-    responseAppend.de_request = request;
-
-    // Merge properties of our Request and Response prototypes
-    // to the incoming request and response objects.
-    Object.assign(request, requestAppend, requestProto);
-    Object.assign(response, responseAppend, responseProto);
+    const perfectRequest = new Request(request, response);
+    const perfectResponse = new Response(response, request);
+    perfectRequest.response = perfectResponse;
+    perfectResponse.request = perfectRequest;
 
     // Build the runList.
-    buildRunList(this, (request as unknown) as IRequest, ((request as unknown) as IRequest).de_taskList);
+    buildRunList(this, perfectRequest, perfectRequest.taskList);
 
     // Run the tasks.
-    schedule(
-      ((request as unknown) as IRequest).de_taskList,
-      (request as unknown) as IRequest,
-      (response as unknown) as IResponse
-    );
+    schedule(perfectRequest.taskList, perfectRequest, perfectResponse);
   };
 }

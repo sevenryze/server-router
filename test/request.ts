@@ -3,16 +3,16 @@ import { Router } from "../lib";
 
 /**********************************************************************************************************************/
 describe("Request", () => {
-  describe(" de_getIp()", () => {
+  describe("#ip", () => {
     test("应该返回客户端IP", async () => {
       const router = new Router();
 
       router.common((request, response) => {
-        const ip = request. de_getIp();
+        const ip = request.ip;
 
         expect(ip).toEqual("::ffff:127.0.0.1");
 
-        response. de_send();
+        response.send();
       });
 
       await router.listen(0);

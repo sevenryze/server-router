@@ -15,24 +15,27 @@
 * [`Router()`](#router)
 	* [`mount(path, router)`](#mountpath-router)
 	* [`METHOD(task)`](#methodtask)
-	* [Helpers on `Request`](#helpers-on-request)
-		* [`request. de_originalUrl`: string](#request-de_originalurl-string)
-		* [`request. de_parsedUrl`: Url](#request-de_parsedurl-url)
-		* [`request. de_queryString`: object](#request-de_querystring-object)
-		* [`request. de_response`: Respond](#request-de_response-respond)
-		* [`request. de_method`: string](#request-de_method-string)
-		* [`request. de_headers`: object](#request-de_headers-object)
-		* [`request. de_taskList`: Task[]](#request-de_tasklist-task)
-		* [`request. de_getIp()`: () => string](#request-de_getip-string)
-		* [`request.share`: {}](#requestshare)
-	* [Helpers on `Response`](#helpers-on-response)
-		* [`response. de_request`: Request](#response-de_request-request)
-		* [`response. de_setHeader(object)`: (object) => Respond](#response-de_setheaderobject-object-respond)
-		* [`response. de_setStatus(code)`: (code: number) => Response](#response-de_setstatuscode-code-number-response)
-		* [`response. de_send(body)`: (body?) => Response](#response-de_sendbody-body-response)
 	* [`listen(port)`](#listenport)
 	* [`close()`](#close)
 	* [`getListeningAddress()`](#getlisteningaddress)
+* [Helpers on `Request`](#helpers-on-request)
+	* [`request.innerRequest`: IncomingMessage](#requestinnerrequest-incomingmessage)
+	* [`request.innerResponse`: ServerResponse](#requestinnerresponse-serverresponse)
+	* [`request.originalUrl`: string](#requestoriginalurl-string)
+	* [`request.parsedUrl`: Url](#requestparsedurl-url)
+	* [`request.response`: Respond](#requestresponse-respond)
+	* [`request.method`: string](#requestmethod-string)
+	* [`request.headers`: object](#requestheaders-object)
+	* [`request.taskList`: Task[]](#requesttasklist-task)
+	* [`request.ip`: string](#requestip-string)
+	* [`request.share`: {}](#requestshare)
+* [Helpers on `Response`](#helpers-on-response)
+	* [`response.request`: Request](#responserequest-request)
+	* [`response.innerRequest`: IncomingMessage](#responseinnerrequest-incomingmessage)
+	* [`response.innerResponse`: ServerResponse](#responseinnerresponse-serverresponse)
+	* [`response.setHeader(object)`: (object) => Respond](#responsesetheaderobject-object-respond)
+	* [`response.setStatus(code)`: (code: number) => Response](#responsesetstatuscode-code-number-response)
+	* [`response.send(body)`: (body?) => Response](#responsesendbody-body-response)
 * [Build and Test](#build-and-test)
 	* [Build](#build)
 	* [Test](#test)
@@ -100,12 +103,12 @@ For a specific http request, system will give you an integrated **`TPT`**. And t
 
 # How to use
 
-Use `npm` to install `@sevenryze/server`, then import the only exported class.
+Use `npm` to install `@sevenryze/server-router`, then import the only exported class.
 
 ```
-import { Router } from "@sevenryze/server"
+import { Router } from "@sevenryze/server-router"
 // Or commonjs
-const { Router } = require("@sevenryze/server");
+const { Router } = require("@sevenryze/server-router");
 
 let router = new Router();
 ```
@@ -158,7 +161,7 @@ Want to know why? see my blog, if there are... 🤡
 
 ```
 // sync task
-router.get( (request, response, next) => {
+router.get((request, response, next) => {
     // Do something.
 
     response.send();
@@ -171,99 +174,6 @@ router.get(async (request, response, next) => {
 
     return next();
 })
-```
-
-## Helpers on `Request`
-
-### `request. de_originalUrl`: string
-
-Original, unprocessed request url.
-
-### `request. de_parsedUrl`: Url
-
-The parsed http url, see https://nodejs.org/dist/latest-v9.x/docs/api/url.html#url_url_strings_and_url_objects for more info.
-
-### `request. de_queryString`: object
-
-The query string key-value pairs parsed into object format.
-
-### `request. de_response`: Respond
-
-Point to the accompanied Response object.
-
-### `request. de_method`: string
-
-The request http method.
-
-### `request. de_headers`: object
-
-The http headers parsed into object format.
-
-### `request. de_taskList`: Task[]
-
-The tasks waiting for this request.
-
-### `request. de_getIp()`: () => string
-
-Get the client ip and be able to handle behind proxy case.
-
-```js
-request.de_getIp();
-// => "127.0.0.1"
-```
-
-### `request.share`: {}
-
-The app context variable for simply share state between tasks.
-
-## Helpers on `Response`
-
-### `response. de_request`: Request
-
-Points to the accompanied request object.
-
-### `response. de_setHeader(object)`: (object) => Respond
-
-- object <string> - Object used to set the headers, such as { Accept: "text/plain", "X-API-Key": "dde" }.
-
-Set header `key` to its `value`. If the `Content-Type` field is going to be set, this method will automatically turn the value to extensional form, eg."html" to the standard mime forms "text/html", and add the charset if it can be matched in mime-db package.
-
-Return the this object, aka. Respond to make chain-able calls available.
-
-```js
-response.de_setHeader({ Accept: "text/plain", "X-API-Key": "xmt" });
-// => Accept: "text/plain"
-// => X-API-Key: "xmt"
-response.de_setHeader({ "Content-Type": "json" });
-// => Content-Type: "application/json; charset=utf-8"
-response.de_setHeader({ "Content-Type": "html" });
-// => Content-Type: "text/html; charset=utf-8"
-response.de_setHeader({ "Content-Type": "bin" });
-// => Content-Type: "application/octet-stream"
-```
-
-### `response. de_setStatus(code)`: (code: number) => Response
-
-- code <number> - Http status code number such as "404"
-
-Set the status `code` of the response.
-
-Return this object for chain-able calls.
-
-```JavaScript
-response.setStatus(404);
-```
-
-### `response. de_send(body)`: (body?) => Response
-
-- body <string | object | buffer> - Can be a string such as `"some string"`, an object such as `{some: "haha"}` and a buffer such as `new Buffer("some buffer")`.
-
-Send response to the remote client, and this method will terminate the underlying socket session.
-
-```JavaScript
-response.send(new Buffer("some buffer"));
-response.send({ some: "json" });
-response.send("<p>some html</p>");
 ```
 
 ## `listen(port)`
@@ -291,6 +201,111 @@ router.close();
 ## `getListeningAddress()`
 
 Get the bounding server address info.
+
+# Helpers on `Request`
+
+## `request.innerRequest`: IncomingMessage
+
+The underlying http request.
+
+## `request.innerResponse`: ServerResponse
+
+The underlying http response.
+
+## `request.originalUrl`: string
+
+Original, unprocessed request url.
+
+## `request.parsedUrl`: Url
+
+The parsed http url, see https://nodejs.org/dist/latest-v9.x/docs/api/url.html#url_url_strings_and_url_objects for more info.
+
+## `request.response`: Respond
+
+Point to the accompanied Response object.
+
+## `request.method`: string
+
+The request http method.
+
+## `request.headers`: object
+
+The http headers parsed into object format.
+
+## `request.taskList`: Task[]
+
+The tasks waiting for this request.
+
+## `request.ip`: string
+
+Get the client ip and be able to handle behind proxy case.
+
+```js
+request.ip;
+// => "127.0.0.1"
+```
+
+## `request.share`: {}
+
+The app context variable for simply share states between tasks.
+
+# Helpers on `Response`
+
+## `response.request`: Request
+
+Points to the accompanied request object.
+
+## `response.innerRequest`: IncomingMessage
+
+The underlying http request.
+
+## `response.innerResponse`: ServerResponse
+
+The underlying http response.
+
+## `response.setHeader(object)`: (object) => Respond
+
+- `object: Headers` - Object used to set the headers, such as { Accept: "text/plain", "X-API-Key": "dde" }.
+
+Set header `key` to its `value`. If the `Content-Type` field is going to be set, this method will automatically turn the value to extensional form, eg."html" to the standard mime forms "text/html", and add the charset if it can be matched in mime-db package.
+
+Return the this object, aka. Respond to make chain-able calls available.
+
+```js
+response.setHeader({ Accept: "text/plain", "X-API-Key": "xmt" });
+// => Accept: "text/plain"
+// => X-API-Key: "xmt"
+response.setHeader({ "Content-Type": "json" });
+// => Content-Type: "application/json; charset=utf-8"
+response.setHeader({ "Content-Type": "html" });
+// => Content-Type: "text/html; charset=utf-8"
+response.setHeader({ "Content-Type": "bin" });
+// => Content-Type: "application/octet-stream"
+```
+
+## `response.setStatus(code)`: (code: number) => Response
+
+- `code: number` - Http status code number such as "404"
+
+Set the status `code` of the response.
+
+Return this object for chain-able calls.
+
+```JavaScript
+response.setStatus(404);
+```
+
+## `response.send(body)`: (body?) => Response
+
+- `body: string | object | buffer` - Can be a string such as `"some string"`, an object such as `{some: "haha"}` and a buffer such as `new Buffer("some buffer")`.
+
+Send response to the remote client, and this method will terminate the underlying socket session.
+
+```JavaScript
+response.send(new Buffer("some buffer"));
+response.send({ some: "json" });
+response.send("<p>some html</p>");
+```
 
 # Build and Test
 

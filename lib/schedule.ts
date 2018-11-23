@@ -1,5 +1,6 @@
-import { IncomingMessage } from "http";
-import { IRequest, IResponse, ITask } from "./interface";
+import { ITask } from ".";
+import { Request } from "./prototype/request";
+import { Response } from "./prototype/response";
 
 /**
  * Actually run all matching tasks.
@@ -8,7 +9,7 @@ import { IRequest, IResponse, ITask } from "./interface";
  * @param request The manicured request object.
  * @param response The manicured response object.
  */
-export function schedule(runList: ITask[], request: IRequest, response: IResponse): void {
+export function schedule(runList: ITask[], request: Request, response: Response): void {
   if (!Array.isArray(runList) || runList.length < 1 || !request || !response) {
     return;
   }
@@ -20,7 +21,7 @@ export function schedule(runList: ITask[], request: IRequest, response: IRespons
       process.nextTick(() => {
         const task = runList[nextTaskIndex++];
 
-        ((request as unknown) as IncomingMessage).url = task.strimPath;
+        request.trimmedUrl = task.strimPath;
 
         task(request, response, nextTask);
       });
