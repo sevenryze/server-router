@@ -8,7 +8,7 @@
 
 * [Table of Content](#table-of-content)
 * [Story](#story)
-* [Big Picture, as I said](#big-picture-as-i-said)
+* [Big picture, as I said](#big-picture-as-i-said)
 * [How to use](#how-to-use)
 * [API](#api)
 * [`serveStatic`](#servestatic)
@@ -28,7 +28,6 @@
 	* [`request.headers`: object](#requestheaders-object)
 	* [`request.taskList`: Task[]](#requesttasklist-task)
 	* [`request.ip`: string](#requestip-string)
-	* [`request.share`: {}](#requestshare)
 * [Helpers on `Response`](#helpers-on-response)
 	* [`response.request`: Request](#responserequest-request)
 	* [`response.innerRequest`: IncomingMessage](#responseinnerrequest-incomingmessage)
@@ -66,7 +65,7 @@ In the future, we will give our best to get continual improvements. Maybe there 
 
 Good luck for this project!
 
-# Big Picture, as I said
+# Big picture, as I said
 
 An Incoming HTTP Request - by the simple view point - is consist of below parts:
 
@@ -145,7 +144,7 @@ router_v1.mount("/user", router_user);
 
 ## `METHOD(task)`
 
-- `task: (request, response, next) => void`: The task function will get three parameters - `request`, `response`, `next`, corresponding the Request, Respond of http request and the control passing function `next()` respectively.
+- `task: (request, response, next, share) => void`: The task function will get three parameters - `request`, `response`, `next` and `share`, corresponding the Request, Respond of http request; the control passing function `next()` and the app context share object respectively.
 
 Register the task processing function into router. We support a few common `http method`:
 
@@ -161,7 +160,7 @@ Want to know why? see my blog, if there are... 🤡
 
 ```
 // sync task
-router.get((request, response, next) => {
+router.get((request, response, next, share) => {
     // Do something.
 
     response.send();
@@ -169,7 +168,7 @@ router.get((request, response, next) => {
 });
 
 // async task
-router.get(async (request, response, next) => {
+router.get(async (request, response, next, share) => {
     // Do something.
 
     return next();
@@ -244,10 +243,6 @@ Get the client ip and be able to handle behind proxy case.
 request.ip;
 // => "127.0.0.1"
 ```
-
-## `request.share`: {}
-
-The app context variable for simply share states between tasks.
 
 # Helpers on `Response`
 

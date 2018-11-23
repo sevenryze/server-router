@@ -16,6 +16,9 @@ export function schedule(runList: ITask[], request: Request, response: Response)
 
   let nextTaskIndex: number = 0;
 
+  // Share context used within request process.
+  const share = {};
+
   (function nextTask() {
     if (nextTaskIndex < runList.length) {
       process.nextTick(() => {
@@ -23,7 +26,7 @@ export function schedule(runList: ITask[], request: Request, response: Response)
 
         request.trimmedUrl = task.strimPath;
 
-        task(request, response, nextTask);
+        task(request, response, nextTask, share);
       });
     }
   })();

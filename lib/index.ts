@@ -14,7 +14,7 @@ export type Request = Request;
 export type Response = Response;
 
 export interface ITask {
-  (request: Request, response: Response, next: () => void): void;
+  (request: Request, response: Response, next: () => void, share: Record<any, any>): void;
 
   mountHttpMethod?: string;
 
