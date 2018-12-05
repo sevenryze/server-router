@@ -44,7 +44,7 @@ export class Request {
    * Get the client ip.
    *
    * Examples:
-   * ```
+   * ```ts
    *  request.ip;
    *  // => "127.0.0.1"
    * ```

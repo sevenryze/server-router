@@ -19,7 +19,7 @@ export class Response {
    *
    * Examples:
    *
-   * ```
+   * ```ts
    *  response.setHeader({ "Accept": "text/plain", "X-API-Key": "xmt" });
    *  // => Accept: "text/plain"
    *  // => X-API-Key: "xmt"
@@ -75,7 +75,7 @@ export class Response {
    * Set status `code` of this response.
    *
    * Examples:
-   * ```
+   * ```ts
    *  response.setStatus(404);
    * ```
    * @param code Status code number such as "404".
@@ -96,7 +96,7 @@ export class Response {
    * this method will terminate the underlying session.
    *
    * Examples:
-   * ```
+   * ```ts
    *  response.send(new Buffer("some buffer"));
    *  response.send({ some: "json" });
    *  response.send("<p>some html</p>");

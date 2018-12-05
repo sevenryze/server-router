@@ -28,6 +28,7 @@ export function serveStatic(root: string, options?: staticServe.ServeStaticOptio
   return (request, response, next) => {
     request.innerRequest.url = request.trimmedUrl;
 
+    // TODO: Find a nice way to process next(err) case.
     middleware(request.innerRequest as any, response.innerResponse as any, next);
   };
 }
